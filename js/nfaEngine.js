@@ -5,62 +5,69 @@
  */
 
 export const NFA_STATES = {
-  // --- Section 1: Cheat Code Detector (Union NFA: Σ*(COIN | LUCK)) ---
-  Q0: { id: 'Q0', name: 'IDLE / Σ*', label: 'Q0', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 55, y: 115 },
-  
+  // --- Section 1: Gameplay States (DFA States Q0 - Q7) ---
+  Q0: { id: 'Q0', name: 'IDLE', label: 'Q0', desc: 'Waiting for COIN [P]', isFinal: false, x: 75, y: 285 },
+  Q1: { id: 'Q1', name: 'READY', label: 'Q1', desc: 'Credit Loaded. Use WASD', isFinal: false, x: 240, y: 285 },
+  Q2: { id: 'Q2', name: 'AIMING', label: 'Q2', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 420, y: 285 },
+  Q3: { id: 'Q3', name: 'DROP', label: 'Q3', desc: 'Claw Descending...', isFinal: false, x: 600, y: 285 },
+  Q4: { id: 'Q4', name: 'GRAB', label: 'Q4', desc: 'Closing Claw Fingers', isFinal: false, x: 600, y: 385 },
+  Q5: { id: 'Q5', name: 'ASCEND', label: 'Q5', desc: 'Pulling Up...', isFinal: false, x: 420, y: 385 },
+  Q6: { id: 'Q6', name: 'RETURN', label: 'Q6', desc: 'Returning to Chute', isFinal: false, x: 240, y: 385 },
+  Q7: { id: 'Q7', name: 'RESULT', label: 'Q7', desc: 'Prize Evaluation (Accepting)', isFinal: true, x: 75, y: 385 },
+
+  // --- Section 2: Cheat Keystroke Stream NFA ---
+  Q8: { id: 'Q8', name: 'Σ* STREAM', label: 'Q8', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 55, y: 110 },
+
   // Branch A: C-O-I-N (Unlimited Coins)
-  Q1: { id: 'Q1', name: '[C]', label: 'Q1', desc: 'Matched "C"', isFinal: false, x: 175, y: 60 },
-  Q2: { id: 'Q2', name: '[O]', label: 'Q2', desc: 'Matched "O"', isFinal: false, x: 300, y: 60 },
-  Q3: { id: 'Q3', name: '[I]', label: 'Q3', desc: 'Matched "I"', isFinal: false, x: 425, y: 60 },
-  Q4: { id: 'Q4', name: 'UNLI ACCEPT', label: 'Q4', desc: 'Unli Coins Accept State (F)', isFinal: true, x: 565, y: 60 },
+  Q9: { id: 'Q9', name: '[C]', label: 'Q9', desc: 'Matched "C"', isFinal: false, x: 180, y: 60 },
+  Q10: { id: 'Q10', name: '[O]', label: 'Q10', desc: 'Matched "O"', isFinal: false, x: 310, y: 60 },
+  Q11: { id: 'Q11', name: '[I]', label: 'Q11', desc: 'Matched "I"', isFinal: false, x: 440, y: 60 },
+  Q12: { id: 'Q12', name: 'UNLI ACCEPT', label: 'Q12', desc: 'Unli Coins Accept State (F)', isFinal: true, x: 575, y: 60 },
 
   // Branch B: L-U-C-K (+15% Win Probability)
-  Q5: { id: 'Q5', name: '[L]', label: 'Q5', desc: 'Matched "L"', isFinal: false, x: 175, y: 165 },
-  Q6: { id: 'Q6', name: '[U]', label: 'Q6', desc: 'Matched "U"', isFinal: false, x: 300, y: 165 },
-  Q7: { id: 'Q7', name: '[C]', label: 'Q7', desc: 'Matched "C"', isFinal: false, x: 425, y: 165 },
-  Q8: { id: 'Q8', name: 'BOOST ACCEPT', label: 'Q8', desc: '+15% Boost Accept State (F)', isFinal: true, x: 565, y: 165 },
-
-  // --- Section 2: Claw Machine Grab Superposition ---
-  Q9: { id: 'Q9', name: 'AIM / DROP', label: 'Q9', desc: 'Gantry Aiming & Descending', isFinal: false, x: 110, y: 340 },
-  Q10: { id: 'Q10', name: 'GRAB EVAL', label: 'Q10', desc: 'Fingers Clamped on Prize Pile', isFinal: false, x: 270, y: 340 },
-  Q11: { id: 'Q11', name: 'SLIP / MISS', label: 'Q11', desc: 'Branch 1: Loose Grip (Miss)', isFinal: false, x: 460, y: 285 },
-  Q12: { id: 'Q12', name: 'SECURE WIN', label: 'Q12', desc: 'Branch 2: Secure Grip (Accepting)', isFinal: true, x: 460, y: 395 },
+  Q13: { id: 'Q13', name: '[L]', label: 'Q13', desc: 'Matched "L"', isFinal: false, x: 180, y: 160 },
+  Q14: { id: 'Q14', name: '[U]', label: 'Q14', desc: 'Matched "U"', isFinal: false, x: 310, y: 160 },
+  Q15: { id: 'Q15', name: '[C]', label: 'Q15', desc: 'Matched "C"', isFinal: false, x: 440, y: 160 },
+  Q16: { id: 'Q16', name: 'BOOST ACCEPT', label: 'Q16', desc: '+15% Boost Accept State (F)', isFinal: true, x: 575, y: 160 },
 };
 
 export const NFA_TRANSITIONS = [
-  // 1. Self-loop on Q0: Guessing keystroke is regular play
-  { from: 'Q0', to: 'Q0', symbol: 'Σ (Any Key)', isSelfLoop: true },
-  
+  // 1. Cheat Input Stream Self-loop (Guessing keystroke is regular play)
+  { from: 'Q8', to: 'Q8', symbol: 'Σ (Any Key)', isSelfLoop: true },
+
   // 2. Branch A: COIN
-  { from: 'Q0', to: 'Q1', symbol: 'Key "C"' },
-  { from: 'Q1', to: 'Q2', symbol: 'Key "O"' },
-  { from: 'Q2', to: 'Q3', symbol: 'Key "I"' },
-  { from: 'Q3', to: 'Q4', symbol: 'Key "N"' },
+  { from: 'Q8', to: 'Q9', symbol: 'Key "C"' },
+  { from: 'Q9', to: 'Q10', symbol: 'Key "O"' },
+  { from: 'Q10', to: 'Q11', symbol: 'Key "I"' },
+  { from: 'Q11', to: 'Q12', symbol: 'Key "N"' },
 
   // 3. Branch B: LUCK
-  { from: 'Q0', to: 'Q5', symbol: 'Key "L"' },
-  { from: 'Q5', to: 'Q6', symbol: 'Key "U"' },
-  { from: 'Q6', to: 'Q7', symbol: 'Key "C"' },
-  { from: 'Q7', to: 'Q8', symbol: 'Key "K"' },
+  { from: 'Q8', to: 'Q13', symbol: 'Key "L"' },
+  { from: 'Q13', to: 'Q14', symbol: 'Key "U"' },
+  { from: 'Q14', to: 'Q15', symbol: 'Key "C"' },
+  { from: 'Q15', to: 'Q16', symbol: 'Key "K"' },
 
-  // Direct toggle shortcut [Shift + C]
-  { from: 'Q0', to: 'Q4', symbol: '[Shift+C]' },
-  { from: 'Q0', to: 'Q8', symbol: '[Shift+C]' },
-
-  // 4. Gameplay Transitions
-  { from: 'Q9', to: 'Q10', symbol: 'BOTTOM_TOUCH' },
-  // Nondeterministic Split on GRAB:
-  { from: 'Q10', to: 'Q11', symbol: 'GRAB: LOOSE' },
-  { from: 'Q10', to: 'Q12', symbol: 'GRAB: FIRM' },
+  // 4. Gameplay Lifecycle Transitions (DFA States Q0 - Q7)
+  { from: 'Q0', to: 'Q1', symbol: 'COIN [P]' },
+  { from: 'Q1', to: 'Q2', symbol: 'MOVE [WASD]' },
+  { from: 'Q2', to: 'Q2', symbol: 'MOVE [WASD]', isSelfLoop: true },
+  { from: 'Q2', to: 'Q3', symbol: 'DROP [Enter]' },
+  { from: 'Q1', to: 'Q3', symbol: 'DROP [Enter]' },
+  { from: 'Q3', to: 'Q4', symbol: 'BOTTOM_TOUCH' },
+  { from: 'Q4', to: 'Q5', symbol: 'GRAB_DONE' },
+  { from: 'Q5', to: 'Q6', symbol: 'TOP_LIMIT' },
+  { from: 'Q6', to: 'Q7', symbol: 'CHUTE_REACHED' },
+  { from: 'Q7', to: 'Q0', symbol: 'RESET' },
 
   // 5. ε-Transitions connecting Cheats to Gameplay
-  { from: 'Q4', to: 'Q0', symbol: 'ε: Unli Tokens', isEpsilon: true, isDashed: true },
-  { from: 'Q8', to: 'Q12', symbol: 'ε: +15% Boost', isEpsilon: true, isDashed: true },
+  { from: 'Q12', to: 'Q0', symbol: 'ε: Unli Tokens', isEpsilon: true, isDashed: true },
+  { from: 'Q16', to: 'Q4', symbol: 'ε: +15% Boost', isEpsilon: true, isDashed: true },
 ];
 
 export class NFAEngine {
   constructor(onActiveStatesChange) {
-    this.activeStates = new Set(['Q0']);
+    this.gameplayState = 'Q0';
+    this.activeStates = new Set(['Q0', 'Q8']);
     this.onActiveStatesChange = onActiveStatesChange;
     this.cheatEnabled = false;
     this.unliCoinActive = false;
@@ -72,19 +79,16 @@ export class NFAEngine {
 
     this.seqLuck = ['L', 'U', 'C', 'K'];
     this.luckIdx = 0;
-
-    // Track active gameplay state in NFA
-    this.gameplayState = null; // 'Q9', 'Q10', 'Q11', 'Q12'
   }
 
   reset() {
-    this.activeStates = new Set(['Q0']);
+    this.gameplayState = 'Q0';
+    this.activeStates = new Set(['Q0', 'Q8']);
     this.cheatEnabled = false;
     this.unliCoinActive = false;
     this.boostChanceActive = false;
     this.coinIdx = 0;
     this.luckIdx = 0;
-    this.gameplayState = null;
     this.notify();
   }
 
@@ -95,42 +99,48 @@ export class NFAEngine {
     this.boostChanceActive = false;
     this.coinIdx = 0;
     this.luckIdx = 0;
-    this.gameplayState = null;
-    this.activeStates = new Set(['Q0']);
+    this.recomputeActiveStates();
     this.notify();
   }
 
-  // Called by claw machine as gantry moves, drops, grabs
-  notifyGameAction(action) {
-    if (!this.cheatEnabled) return;
-
-    if (action === 'AIM_OR_DROP') {
-      this.gameplayState = 'Q9';
-    } else if (action === 'BOTTOM_TOUCH') {
-      this.gameplayState = 'Q10';
-    } else if (action === 'EVALUATE_GRAB') {
-      // NONDETERMINISTIC SUPERPOSITION: Both outcomes activate!
-      this.activeStates.add('Q11');
-      this.activeStates.add('Q12');
-      this.notify();
-      return;
-    } else if (action === 'RESET_IDLE') {
-      this.activeStates.delete('Q9');
-      this.activeStates.delete('Q10');
-      this.activeStates.delete('Q11');
-      this.activeStates.delete('Q12');
-      this.gameplayState = null;
-    }
-
-    if (this.gameplayState) {
-      this.activeStates.add(this.gameplayState);
-    }
+  setGameplayState(stateId) {
+    this.gameplayState = stateId || 'Q0';
+    this.recomputeActiveStates();
     this.notify();
+  }
+
+  notifyGameAction(action) {
+    // Kept for backward compatibility
+  }
+
+  recomputeActiveStates() {
+    const states = new Set();
+    // 1. Current gameplay lifecycle state
+    states.add(this.gameplayState || 'Q0');
+
+    if (this.cheatEnabled) {
+      // 2. Cheat stream root is active when cheat mode is enabled
+      states.add('Q8');
+
+      // 3. Sequential typed progress
+      if (this.coinIdx === 1) states.add('Q9');
+      else if (this.coinIdx === 2) states.add('Q10');
+      else if (this.coinIdx === 3) states.add('Q11');
+
+      if (this.luckIdx === 1) states.add('Q13');
+      else if (this.luckIdx === 2) states.add('Q14');
+      else if (this.luckIdx === 3) states.add('Q15');
+
+      // 4. Unlocked cheat accepting states stay active
+      if (this.unliCoinActive) states.add('Q12');
+      if (this.boostChanceActive) states.add('Q16');
+    }
+
+    this.activeStates = states;
   }
 
   feedInput(key) {
     const k = (key || '').toUpperCase();
-    const nextStates = new Set(['Q0']); // Q0 always active
     let unlockedSomething = false;
 
     // 1. Process COIN branch
@@ -159,23 +169,7 @@ export class NFAEngine {
       this.luckIdx = (k === this.seqLuck[0]) ? 1 : 0;
     }
 
-    // Add branch states based on typed progress
-    if (this.coinIdx === 1) nextStates.add('Q1');
-    else if (this.coinIdx === 2) nextStates.add('Q2');
-    else if (this.coinIdx === 3) nextStates.add('Q3');
-
-    if (this.luckIdx === 1) nextStates.add('Q5');
-    else if (this.luckIdx === 2) nextStates.add('Q6');
-    else if (this.luckIdx === 3) nextStates.add('Q7');
-
-    // Maintain accepted cheat states
-    if (this.unliCoinActive) nextStates.add('Q4');
-    if (this.boostChanceActive) nextStates.add('Q8');
-
-    // Maintain active gameplay state if any
-    if (this.gameplayState) nextStates.add(this.gameplayState);
-
-    this.activeStates = nextStates;
+    this.recomputeActiveStates();
     this.notify();
 
     return {
@@ -191,15 +185,12 @@ export class NFAEngine {
   setModifier(modifierKey, isActive) {
     if (modifierKey === 'unli') {
       this.unliCoinActive = isActive;
-      if (isActive) this.activeStates.add('Q4');
-      else this.activeStates.delete('Q4');
     } else if (modifierKey === 'boost') {
       this.boostChanceActive = isActive;
-      if (isActive) this.activeStates.add('Q8');
-      else this.activeStates.delete('Q8');
     }
 
     this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
+    this.recomputeActiveStates();
     this.notify();
   }
 

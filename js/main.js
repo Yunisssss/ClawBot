@@ -66,6 +66,8 @@ class App {
         this.activeStateDisplay.textContent = stateInfo.label;
         this.stateRuleDisplay.textContent = symbol ? `Trigger: ${symbol}` : stateInfo.desc;
       }
+      // Keep NFA synced with gameplay state
+      this.nfa.setGameplayState(stateInfo.id);
     });
 
     // 2. NFA Engine
@@ -74,12 +76,12 @@ class App {
         this.renderer.setActiveStates(activeStatesList);
         const statesStr = `{ ${activeStatesList.join(', ')} }`;
         this.activeStateDisplay.textContent = statesStr;
-        if (activeStatesList.includes('Q11') && activeStatesList.includes('Q12')) {
-          this.stateRuleDisplay.textContent = 'Superposition: {Q11:Slip, Q12:Win}!';
-        } else if (activeStatesList.includes('Q4') || activeStatesList.includes('Q8')) {
-          this.stateRuleDisplay.textContent = 'Cheat Path Accepted via ε!';
+        if (activeStatesList.includes('Q12') || activeStatesList.includes('Q16')) {
+          this.stateRuleDisplay.textContent = 'Cheat Active via ε-Transition!';
+        } else if (activeStatesList.some(s => ['Q9', 'Q10', 'Q11', 'Q13', 'Q14', 'Q15'].includes(s))) {
+          this.stateRuleDisplay.textContent = 'Matching Cheat Keystrokes...';
         } else {
-          this.stateRuleDisplay.textContent = 'Matching Input Stream (Σ*)...';
+          this.stateRuleDisplay.textContent = 'Active Gameplay + Cheat Stream (Σ*)';
         }
       }
     });
@@ -129,6 +131,7 @@ class App {
       this.automataContentArea.classList.add('has-cheats');
       this.cheatActionText.textContent = 'Disable Cheat Code';
       this.nfa.setCheatMode(true);
+      this.nfa.setGameplayState(this.dfa.currentState);
       this.renderer.setGraph('NFA', NFA_STATES, NFA_TRANSITIONS, Array.from(this.nfa.activeStates));
       sound.playCheatUnlock();
     } else {

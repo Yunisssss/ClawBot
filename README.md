@@ -54,18 +54,21 @@ $$\delta: Q \times \Sigma \to Q$$
   * `Q7: RESULT` — Prize drop evaluation & accepting state (`CHUTE_REACHED`) $\to$ resets to `Q0`.
 
 ### 2. The NFA (Cheat ON Mode)
-In cheat mode, the illustration panel transforms into an **Unified Nondeterministic Finite Automaton**:
+In cheat mode, the automata visualizer presents an integrated **Nondeterministic Finite Automaton**:
 $$\delta: Q \times (\Sigma \cup \{\varepsilon\}) \to \mathcal{P}(Q)$$
-* When initially enabled, **no cheat is active** until typed!
-* **Cheats:**
-  * Type `C-O-I-N` to unlock Unlimited Coins ($Q_4$ via $\varepsilon \to Q_0$)
-  * Type `L-U-C-K` to unlock +15% Grip Boost ($Q_8$ via $\varepsilon \to Q_{12}$, boosting catch rate from 50% to 65%)
-  * While receiving continuous player keypresses, state `s0` non-deterministically guesses whether each key is regular gameplay or the start of the cheat sequence (`C-L-A-W`):
-    $$\delta(s_0, \text{'C'}) = \{s_0, s_1\}$$
+
+* **Complete Gameplay Lifecycle ($Q_0 - Q_7$):**
+  * The NFA includes all 8 gameplay states from the DFA (`Q0: IDLE` through `Q7: RESULT`), tracking live carriage movement, drops, grabs, and prize returns.
+  * The claw grab superposition has been removed so the gameplay lifecycle strictly matches the real machine's physical state.
+* **Cheat Keystroke Stream ($Q_8 - Q_{16}$):**
+  * State `Q8: Σ* STREAM` maintains an active self-loop for any incoming keystroke $\Sigma$ during normal gameplay.
+  * When initially enabled via `Shift + C`, **cheats start locked** until typed:
+    * Type `C-O-I-N`: Transitions non-deterministically through `Q9 [C] -> Q10 [O] -> Q11 [I] -> Q12 [UNLI ACCEPT]`.
+    * Type `L-U-C-K`: Transitions non-deterministically through `Q13 [L] -> Q14 [U] -> Q15 [C] -> Q16 [BOOST ACCEPT]`.
 * **$\varepsilon$-Transitions:**
-  * From the Accepting State `s4`, the automaton branches spontaneously into the modifier sub-states:
-    * `s_unli`: **Unlimited Coins** ($\infty$)
-    * `s_boost`: **+15% Grip Probability Boost** (80% $\to$ 95% win rate)
+  * `Q12` $\xrightarrow{\varepsilon}$ `Q0`: Unlocks Unlimited Tokens ($\infty$) directly into the coin slot.
+  * `Q16` $\xrightarrow{\varepsilon}$ `Q4`: Grants a +15% Grip Probability Boost (boosting normal catch rate from 50% to 65%).
+* **Subset Construction:** The machine can occupy multiple states simultaneously (e.g. `{ Q2, Q8, Q12, Q16 }`). When cheat mode is toggled off, all cheats are completely deactivated.
 
 ---
 

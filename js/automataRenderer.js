@@ -72,7 +72,7 @@ export class AutomataRenderer {
     // 1b. If in NFA Mode: Draw Section Dividers & Headers
     if (this.mode === 'NFA') {
       ctx.save();
-      // Section 1 Header
+      // Section 1 Header (Top)
       ctx.font = '7.5px "Press Start 2P", monospace';
       ctx.fillStyle = '#ffdfef';
       ctx.fillText('▲ CHEAT STREAM NFA: Σ*(COIN | LUCK)', 14, 18);
@@ -82,12 +82,12 @@ export class AutomataRenderer {
       ctx.strokeStyle = 'rgba(255, 220, 240, 0.25)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(10, 230);
-      ctx.lineTo(w - 10, 230);
+      ctx.moveTo(10, 225);
+      ctx.lineTo(w - 10, 225);
       ctx.stroke();
 
-      // Section 2 Header
-      ctx.fillText('▼ CLAW GRAB NON-DETERMINISTIC SUPERPOSITION', 14, 248);
+      // Section 2 Header (Bottom)
+      ctx.fillText('▼ GAMEPLAY LIFECYCLE (DFA STATES Q0 - Q7)', 14, 244);
       ctx.restore();
     }
 
@@ -110,7 +110,7 @@ export class AutomataRenderer {
 
   drawNode(state, isActive) {
     const { ctx } = this;
-    const radius = this.mode === 'NFA' ? 18 : 24;
+    const radius = this.mode === 'NFA' ? 17 : 24;
     const x = state.x;
     const y = state.y;
 
@@ -149,24 +149,24 @@ export class AutomataRenderer {
       ctx.stroke();
     }
 
-    // State Label (e.g. Q0, Q1, Q12)
-    ctx.font = this.mode === 'NFA' ? 'bold 7.5px "Press Start 2P", monospace' : 'bold 8.5px "Press Start 2P", monospace';
+    // State Label (e.g. Q0, Q1, Q16)
+    ctx.font = this.mode === 'NFA' ? 'bold 7px "Press Start 2P", monospace' : 'bold 8.5px "Press Start 2P", monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = isActive ? '#1e1117' : '#fff';
     ctx.fillText(state.id.toUpperCase(), x, y);
 
     // State Name / Description Below Node
-    ctx.font = this.mode === 'NFA' ? '5.5px "Press Start 2P", monospace' : '6px "Press Start 2P", monospace';
+    ctx.font = this.mode === 'NFA' ? '5px "Press Start 2P", monospace' : '6px "Press Start 2P", monospace';
     ctx.fillStyle = isActive ? '#ffe600' : '#ebd4e2';
-    ctx.fillText(state.name, x, y + radius + 10);
+    ctx.fillText(state.name, x, y + radius + 9);
 
     ctx.restore();
   }
 
   drawArrow(from, to, trans, isHighlighted) {
     const { ctx } = this;
-    const radius = this.mode === 'NFA' ? 18 : 24;
+    const radius = this.mode === 'NFA' ? 17 : 24;
 
     ctx.save();
 
@@ -197,7 +197,7 @@ export class AutomataRenderer {
 
       this.drawArrowhead(from.x + 8, from.y - radius, Math.PI * 0.7);
 
-      ctx.font = '5.5px "Press Start 2P", monospace';
+      ctx.font = '5px "Press Start 2P", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(trans.symbol, from.x, loopY - loopRadius - 3);
       ctx.restore();
@@ -207,7 +207,6 @@ export class AutomataRenderer {
     // Directed Line Between Distinct Nodes
     const dx = to.x - from.x;
     const dy = to.y - from.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
     const angle = Math.atan2(dy, dx);
 
     const startX = from.x + Math.cos(angle) * radius;
@@ -215,8 +214,8 @@ export class AutomataRenderer {
     const endX = to.x - Math.cos(angle) * (radius + 2);
     const endY = to.y - Math.sin(angle) * (radius + 2);
 
-    // Curved edge logic
-    const isCurved = trans.isEpsilon || (from.y === to.y && Math.abs(dx) > 130) || (from.y !== to.y && dx !== 0);
+    // Curved edge logic: only curve epsilon transitions and long skip jumps (e.g. Q1 -> Q3)
+    const isCurved = trans.isEpsilon || (from.y === to.y && Math.abs(dx) > 190);
 
     ctx.beginPath();
     if (!isCurved) {
@@ -228,7 +227,7 @@ export class AutomataRenderer {
 
       const midX = (startX + endX) / 2;
       const midY = (startY + endY) / 2 - 6;
-      ctx.font = '5.5px "Press Start 2P", monospace';
+      ctx.font = '5px "Press Start 2P", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(trans.symbol, midX, midY);
     } else {
@@ -236,14 +235,17 @@ export class AutomataRenderer {
       let midX = (startX + endX) / 2;
       let midY = (startY + endY) / 2;
 
-      if (trans.from === 'Q4' && trans.to === 'Q0') {
-        // High sweeping arc back to Q0
-        midX = (startX + endX) / 2;
-        midY = -2;
-      } else if (trans.from === 'Q8' && trans.to === 'Q12') {
-        // Curve down to Q12
-        midX += 35;
-        midY += 10;
+      if (trans.from === 'Q12' && trans.to === 'Q0') {
+        // Sweeping curve from Q12 down through divider to Q0
+        midX = 220;
+        midY = 225;
+      } else if (trans.from === 'Q16' && trans.to === 'Q4') {
+        // Sweeping curve from Q16 around Q3 down to Q4
+        midX = 650;
+        midY = 270;
+      } else if (from.y === to.y && Math.abs(dx) > 190) {
+        // Skip jumps like Q1 -> Q3 arc above intermediate node
+        midY = startY - 26;
       } else {
         midX += (dy > 0 ? 15 : -15);
         midY += (dx > 0 ? 15 : -15);
