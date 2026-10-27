@@ -74,7 +74,13 @@ class App {
         this.renderer.setActiveStates(activeStatesList);
         const statesStr = `{ ${activeStatesList.join(', ')} }`;
         this.activeStateDisplay.textContent = statesStr;
-        this.stateRuleDisplay.textContent = this.nfa.cheatEnabled ? 'Cheat Paths Active!' : 'Matching Input Stream...';
+        if (activeStatesList.includes('Q11') && activeStatesList.includes('Q12')) {
+          this.stateRuleDisplay.textContent = 'Superposition: {Q11:Slip, Q12:Win}!';
+        } else if (activeStatesList.includes('Q4') || activeStatesList.includes('Q8')) {
+          this.stateRuleDisplay.textContent = 'Cheat Path Accepted via ε!';
+        } else {
+          this.stateRuleDisplay.textContent = 'Matching Input Stream (Σ*)...';
+        }
       }
     });
 

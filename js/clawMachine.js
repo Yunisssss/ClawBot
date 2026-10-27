@@ -142,6 +142,8 @@ export class ClawMachine {
       this.dfa.transition('MOVE [WASD]');
     }
 
+    this.nfa.notifyGameAction('AIM_OR_DROP');
+
     // Move gantry within play boundary
     const minX = 96;
     const maxX = 640;
@@ -160,6 +162,7 @@ export class ClawMachine {
     this.stopTimer();
     this.status = 'DROPPING';
     this.targetOpen = 0.95; // open wide on drop
+    this.nfa.notifyGameAction('AIM_OR_DROP');
     sound.playDrop();
     this.dfa.transition('DROP [Enter]');
     return true;
@@ -179,6 +182,7 @@ export class ClawMachine {
         this.targetOpen = 0.1; // clamp claws shut
         sound.playGrab();
         this.dfa.transition('BOTTOM_TOUCH');
+        this.nfa.notifyGameAction('BOTTOM_TOUCH');
         this.grabTimer = 35; // wait frames before ascending
       }
     } else if (this.status === 'GRABBING') {
@@ -188,6 +192,7 @@ export class ClawMachine {
         this.evaluateGrab();
         this.status = 'ASCENDING';
         this.dfa.transition('GRAB_DONE');
+        this.nfa.notifyGameAction('EVALUATE_GRAB');
       }
     } else if (this.status === 'ASCENDING') {
       this.clawY -= this.ascendSpeed;
@@ -235,6 +240,7 @@ export class ClawMachine {
         this.status = 'IDLE';
         this.resetTimer();
         this.dfa.transition('RESET');
+        this.nfa.notifyGameAction('RESET_IDLE');
         this.targetOpen = 0.6;
       }
     }
