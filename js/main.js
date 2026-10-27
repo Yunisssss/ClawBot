@@ -79,7 +79,7 @@ class App {
     });
 
     // Set initial graph to DFA
-    this.renderer.setGraph('DFA', DFA_STATES, DFA_TRANSITIONS, 'q0');
+    this.renderer.setGraph('DFA', DFA_STATES, DFA_TRANSITIONS, 'Q0');
   }
 
   initGame() {
@@ -129,7 +129,14 @@ class App {
       this.cheatsPanel.style.display = 'none';
       this.automataContentArea.classList.remove('has-cheats');
       this.cheatActionText.textContent = 'Enable Cheat Code';
+      
+      // When cheat code is disabled, disable all cheats completely!
       this.nfa.setCheatMode(false);
+      this.clawMachine.unliCoins = false;
+      this.clawMachine.boostChance = false;
+      if (this.seqUnliKeycaps) this.seqUnliKeycaps.forEach(cap => cap.classList.remove('lit'));
+      if (this.seqBoostKeycaps) this.seqBoostKeycaps.forEach(cap => cap.classList.remove('lit'));
+      
       this.renderer.setGraph('DFA', DFA_STATES, DFA_TRANSITIONS, this.dfa.currentState);
       this.activeStateDisplay.textContent = this.dfa.getCurrentStateInfo().label;
       this.stateRuleDisplay.textContent = this.dfa.getCurrentStateInfo().desc;

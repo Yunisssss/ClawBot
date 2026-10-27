@@ -1,41 +1,42 @@
 /**
  * CLAWBOT - Deterministic Finite Automaton (DFA) Engine
  * Formal 5-tuple: M = (Q, Σ, δ, q0, F)
+ * State names: Q0, Q1, Q2, Q3, Q4, Q5, Q6, Q7
  */
 
 export const DFA_STATES = {
-  q0: { id: 'q0', name: 'IDLE', label: 'q0: IDLE', desc: 'Waiting for COIN [C]', isFinal: false, x: 70, y: 90 },
-  q1: { id: 'q1', name: 'READY', label: 'q1: READY', desc: 'Coin Loaded. Use WASD', isFinal: false, x: 240, y: 90 },
-  q2: { id: 'q2', name: 'AIMING', label: 'q2: AIMING', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 420, y: 90 },
-  q3: { id: 'q3', name: 'DROPPING', label: 'q3: DROP', desc: 'Claw Descending...', isFinal: false, x: 600, y: 90 },
-  q4: { id: 'q4', name: 'GRABBING', label: 'q4: GRAB', desc: 'Closing Claw Fingers', isFinal: false, x: 600, y: 300 },
-  q5: { id: 'q5', name: 'ASCENDING', label: 'q5: ASCEND', desc: 'Pulling Up...', isFinal: false, x: 420, y: 300 },
-  q6: { id: 'q6', name: 'RETURNING', label: 'q6: RETURN', desc: 'Returning to Chute', isFinal: false, x: 240, y: 300 },
-  q7: { id: 'q7', name: 'RESULT', label: 'q7: RESULT', desc: 'Prize Evaluation (Accepting)', isFinal: true, x: 70, y: 300 },
+  Q0: { id: 'Q0', name: 'IDLE', label: 'Q0: IDLE', desc: 'Waiting for COIN [C]', isFinal: false, x: 70, y: 90 },
+  Q1: { id: 'Q1', name: 'READY', label: 'Q1: READY', desc: 'Coin Loaded. Use WASD', isFinal: false, x: 240, y: 90 },
+  Q2: { id: 'Q2', name: 'AIMING', label: 'Q2: AIMING', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 420, y: 90 },
+  Q3: { id: 'Q3', name: 'DROPPING', label: 'Q3: DROP', desc: 'Claw Descending...', isFinal: false, x: 600, y: 90 },
+  Q4: { id: 'Q4', name: 'GRABBING', label: 'Q4: GRAB', desc: 'Closing Claw Fingers', isFinal: false, x: 600, y: 300 },
+  Q5: { id: 'Q5', name: 'ASCENDING', label: 'Q5: ASCEND', desc: 'Pulling Up...', isFinal: false, x: 420, y: 300 },
+  Q6: { id: 'Q6', name: 'RETURNING', label: 'Q6: RETURN', desc: 'Returning to Chute', isFinal: false, x: 240, y: 300 },
+  Q7: { id: 'Q7', name: 'RESULT', label: 'Q7: RESULT', desc: 'Prize Evaluation (Accepting)', isFinal: true, x: 70, y: 300 },
 };
 
 // Transition Table δ(state, symbol) -> next_state
 export const DFA_TRANSITIONS = [
-  { from: 'q0', to: 'q1', symbol: 'COIN [C]' },
-  { from: 'q1', to: 'q2', symbol: 'MOVE [WASD]' },
-  { from: 'q2', to: 'q2', symbol: 'MOVE [WASD]' }, // Self-loop
-  { from: 'q2', to: 'q3', symbol: 'DROP [Enter]' },
-  { from: 'q1', to: 'q3', symbol: 'DROP [Enter]' },
-  { from: 'q3', to: 'q4', symbol: 'BOTTOM_TOUCH' },
-  { from: 'q4', to: 'q5', symbol: 'GRAB_DONE' },
-  { from: 'q5', to: 'q6', symbol: 'TOP_LIMIT' },
-  { from: 'q6', to: 'q7', symbol: 'CHUTE_REACHED' },
-  { from: 'q7', to: 'q0', symbol: 'RESET' },
+  { from: 'Q0', to: 'Q1', symbol: 'COIN [C]' },
+  { from: 'Q1', to: 'Q2', symbol: 'MOVE [WASD]' },
+  { from: 'Q2', to: 'Q2', symbol: 'MOVE [WASD]' }, // Self-loop
+  { from: 'Q2', to: 'Q3', symbol: 'DROP [Enter]' },
+  { from: 'Q1', to: 'Q3', symbol: 'DROP [Enter]' },
+  { from: 'Q3', to: 'Q4', symbol: 'BOTTOM_TOUCH' },
+  { from: 'Q4', to: 'Q5', symbol: 'GRAB_DONE' },
+  { from: 'Q5', to: 'Q6', symbol: 'TOP_LIMIT' },
+  { from: 'Q6', to: 'Q7', symbol: 'CHUTE_REACHED' },
+  { from: 'Q7', to: 'Q0', symbol: 'RESET' },
 ];
 
 export class DFAEngine {
   constructor(onStateChange) {
-    this.currentState = 'q0';
+    this.currentState = 'Q0';
     this.onStateChange = onStateChange;
   }
 
   reset() {
-    this.transitionTo('q0');
+    this.transitionTo('Q0');
   }
 
   transition(symbol) {

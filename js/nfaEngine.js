@@ -1,46 +1,46 @@
 /**
  * CLAWBOT - Nondeterministic Finite Automaton (NFA) Engine
  * Formal 5-tuple: N = (Q, Σ, δ, q0, F)
- * Illustrates multi-state subset tracking and ε-transitions for cheat sequences
+ * State names: Q0, Q1, Q2, Q3, Q4, Q5, Q6
  */
 
 export const NFA_STATES = {
-  s0: { id: 's0', name: 'START', label: 's0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 65, y: 90 },
-  s1: { id: 's1', name: 'KEY_C', label: 's1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 200, y: 90 },
-  s2: { id: 's2', name: 'KEY_L', label: 's2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 335, y: 90 },
-  s3: { id: 's3', name: 'KEY_A', label: 's3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 470, y: 90 },
-  s4: { id: 's4', name: 'UNLOCK', label: 's4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 605, y: 90 },
+  Q0: { id: 'Q0', name: 'START', label: 'Q0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 65, y: 90 },
+  Q1: { id: 'Q1', name: 'KEY_C', label: 'Q1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 200, y: 90 },
+  Q2: { id: 'Q2', name: 'KEY_L', label: 'Q2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 335, y: 90 },
+  Q3: { id: 'Q3', name: 'KEY_A', label: 'Q3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 470, y: 90 },
+  Q4: { id: 'Q4', name: 'UNLOCK', label: 'Q4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 605, y: 90 },
   
   // ε-transition sub-states for cheat modifiers
-  s_unli: { id: 's_unli', name: 'UNLI_COIN', label: 'ε: UNLI COIN', desc: 'C-O-I-N Unlocked', isFinal: true, x: 335, y: 300 },
-  s_boost: { id: 's_boost', name: 'BOOST_15', label: 'ε: BOOST +15%', desc: 'L-U-C-K Unlocked', isFinal: true, x: 550, y: 300 },
+  Q5: { id: 'Q5', name: 'UNLI_COIN', label: 'Q5: UNLI COIN', desc: 'ε-Transition: C-O-I-N Unlocked', isFinal: true, x: 335, y: 300 },
+  Q6: { id: 'Q6', name: 'BOOST_15', label: 'Q6: BOOST +15%', desc: 'ε-Transition: L-U-C-K Unlocked', isFinal: true, x: 550, y: 300 },
 };
 
 export const NFA_TRANSITIONS = [
-  // Self-loop on s0: Non-deterministic guess that key is just regular play
-  { from: 's0', to: 's0', symbol: 'Σ (Any Key)', isSelfLoop: true },
+  // Self-loop on Q0: Non-deterministic guess that key is regular play
+  { from: 'Q0', to: 'Q0', symbol: 'Σ (Any Key)', isSelfLoop: true },
   
-  // Non-deterministic branches guessing that keystroke is the start of cheat "C-L-A-W"
-  { from: 's0', to: 's1', symbol: 'Key "C"' },
-  { from: 's1', to: 's2', symbol: 'Key "L"' },
-  { from: 's2', to: 's3', symbol: 'Key "A"' },
-  { from: 's3', to: 's4', symbol: 'Key "W"' },
+  // Non-deterministic branches for cheat sequence "C-L-A-W"
+  { from: 'Q0', to: 'Q1', symbol: 'Key "C"' },
+  { from: 'Q1', to: 'Q2', symbol: 'Key "L"' },
+  { from: 'Q2', to: 'Q3', symbol: 'Key "A"' },
+  { from: 'Q3', to: 'Q4', symbol: 'Key "W"' },
 
   // Direct toggle transition via [Shift + C]
-  { from: 's0', to: 's4', symbol: '[Shift + C]' },
+  { from: 'Q0', to: 'Q4', symbol: '[Shift + C]' },
 
-  // ε-transitions from Accepting State (s4) to Cheat Buffs
-  { from: 's4', to: 's_unli', symbol: 'ε (Spontaneous)' },
-  { from: 's4', to: 's_boost', symbol: 'ε (Spontaneous)' },
+  // ε-transitions from Accepting State (Q4) to Cheat Buffs (Q5, Q6)
+  { from: 'Q4', to: 'Q5', symbol: 'ε (Spontaneous)' },
+  { from: 'Q4', to: 'Q6', symbol: 'ε (Spontaneous)' },
 ];
 
 export class NFAEngine {
   constructor(onActiveStatesChange) {
-    this.activeStates = new Set(['s0']);
+    this.activeStates = new Set(['Q0']);
     this.onActiveStatesChange = onActiveStatesChange;
     this.cheatEnabled = false;
-    this.unliCoinActive = true;
-    this.boostChanceActive = true;
+    this.unliCoinActive = false;
+    this.boostChanceActive = false;
 
     // Separate 4-key sequences for each specific cheat code
     this.seqCoin = ['C', 'O', 'I', 'N'];
@@ -54,7 +54,10 @@ export class NFAEngine {
   }
 
   reset() {
-    this.activeStates = new Set(['s0']);
+    this.activeStates = new Set(['Q0']);
+    this.cheatEnabled = false;
+    this.unliCoinActive = false;
+    this.boostChanceActive = false;
     this.coinIdx = 0;
     this.luckIdx = 0;
     this.clawIdx = 0;
@@ -65,12 +68,17 @@ export class NFAEngine {
   setCheatMode(enabled) {
     this.cheatEnabled = enabled;
     if (enabled) {
-      // Branch into accepting state and ε-states
-      this.activeStates = new Set(['s0', 's4']);
-      if (this.unliCoinActive) this.activeStates.add('s_unli');
-      if (this.boostChanceActive) this.activeStates.add('s_boost');
+      this.unliCoinActive = true;
+      this.boostChanceActive = true;
+      this.activeStates = new Set(['Q0', 'Q4', 'Q5', 'Q6']);
     } else {
-      this.activeStates = new Set(['s0']);
+      // Disabling cheat code disables all cheats completely
+      this.unliCoinActive = false;
+      this.boostChanceActive = false;
+      this.coinIdx = 0;
+      this.luckIdx = 0;
+      this.clawIdx = 0;
+      this.activeStates = new Set(['Q0']);
     }
     this.notify();
   }
@@ -78,10 +86,10 @@ export class NFAEngine {
   // Process a raw key input non-deterministically
   feedInput(key) {
     const k = (key || '').toUpperCase();
-    const nextStates = new Set(['s0']); // s0 always remains active (self-loop on any input)
+    const nextStates = new Set(['Q0']); // Q0 always remains active
     let unlockedSomething = false;
 
-    // 1. Check C-L-A-W sequence
+    // 1. Check C-L-A-W sequence (master cheat)
     if (k === this.seqClaw[this.clawIdx]) {
       this.clawIdx++;
       if (this.clawIdx === this.seqClaw.length) {
@@ -100,7 +108,8 @@ export class NFAEngine {
       this.coinIdx++;
       if (this.coinIdx === this.seqCoin.length) {
         this.coinIdx = 0;
-        this.unliCoinActive = !this.unliCoinActive; // Toggle specific cheat
+        this.unliCoinActive = !this.unliCoinActive;
+        this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
         unlockedSomething = true;
       }
     } else {
@@ -112,30 +121,31 @@ export class NFAEngine {
       this.luckIdx++;
       if (this.luckIdx === this.seqLuck.length) {
         this.luckIdx = 0;
-        this.boostChanceActive = !this.boostChanceActive; // Toggle specific cheat
+        this.boostChanceActive = !this.boostChanceActive;
+        this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
         unlockedSomething = true;
       }
     } else {
       this.luckIdx = (k === this.seqLuck[0]) ? 1 : 0;
     }
 
-    // Branch transitions from all currently active states (NFA simulation)
+    // Non-deterministic branch matching
     this.activeStates.forEach(stateId => {
-      if (stateId === 's0' && k === 'C') {
-        nextStates.add('s1');
-      } else if (stateId === 's1' && k === 'L') {
-        nextStates.add('s2');
-      } else if (stateId === 's2' && k === 'A') {
-        nextStates.add('s3');
-      } else if (stateId === 's3' && k === 'W') {
-        nextStates.add('s4');
+      if (stateId === 'Q0' && k === 'C') {
+        nextStates.add('Q1');
+      } else if (stateId === 'Q1' && k === 'L') {
+        nextStates.add('Q2');
+      } else if (stateId === 'Q2' && k === 'A') {
+        nextStates.add('Q3');
+      } else if (stateId === 'Q3' && k === 'W') {
+        nextStates.add('Q4');
       }
     });
 
     if (this.cheatEnabled || this.unliCoinActive || this.boostChanceActive) {
-      nextStates.add('s4');
-      if (this.unliCoinActive) nextStates.add('s_unli');
-      if (this.boostChanceActive) nextStates.add('s_boost');
+      nextStates.add('Q4');
+      if (this.unliCoinActive) nextStates.add('Q5');
+      if (this.boostChanceActive) nextStates.add('Q6');
       this.cheatEnabled = true;
     }
 
@@ -155,16 +165,19 @@ export class NFAEngine {
   setModifier(modifierKey, isActive) {
     if (modifierKey === 'unli') {
       this.unliCoinActive = isActive;
-      if (this.cheatEnabled) {
-        if (isActive) this.activeStates.add('s_unli');
-        else this.activeStates.delete('s_unli');
-      }
+      if (isActive) this.activeStates.add('Q5');
+      else this.activeStates.delete('Q5');
     } else if (modifierKey === 'boost') {
       this.boostChanceActive = isActive;
-      if (this.cheatEnabled) {
-        if (isActive) this.activeStates.add('s_boost');
-        else this.activeStates.delete('s_boost');
-      }
+      if (isActive) this.activeStates.add('Q6');
+      else this.activeStates.delete('Q6');
+    }
+
+    this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
+    if (!this.cheatEnabled) {
+      this.activeStates.delete('Q4');
+    } else {
+      this.activeStates.add('Q4');
     }
     this.notify();
   }
