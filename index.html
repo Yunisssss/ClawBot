@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLAWBOT - Finite Automata Simulator (DFA & NFA)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="arcade-app">
+    <!-- Header -->
+    <header class="app-header">
+      <h1 class="logo-title">CLAWBOT</h1>
+      <div id="mode-badge" class="mode-badge normal" title="Toggle Mode [Shift + C]">
+        <span class="badge-indicator"></span>
+        <span id="mode-badge-text">Normal</span>
+      </div>
+    </header>
+
+    <!-- Subheaders -->
+    <div class="subheaders-row">
+      <div class="instruction-label">
+        Instruction:<br>
+        <span>Use the console below or the keys.</span>
+      </div>
+      <div class="illustration-label">
+        Finite Automation Illustration:
+      </div>
+    </div>
+
+    <!-- Main Arcade Body -->
+    <main class="main-stage">
+      <!-- Left: Claw Machine Cabinet -->
+      <section class="claw-cabinet-wrapper">
+        <div class="arcade-cabinet">
+          <!-- Top Marquee Sign -->
+          <div class="cabinet-marquee">
+            <div class="marquee-screen"></div>
+          </div>
+
+          <!-- Glass Playing Field -->
+          <div class="cabinet-glass-frame">
+            <div class="glass-reflection-bar left"></div>
+            <div class="glass-reflection-bar right"></div>
+            
+            <canvas id="claw-canvas" width="460" height="340"></canvas>
+            
+            <!-- Chute Indicator Overlay -->
+            <div class="chute-guard">
+              <div class="chute-fence"></div>
+              <div class="chute-label">PRIZE CHUTE</div>
+            </div>
+          </div>
+
+          <!-- Console Ledge (Decorative joystick & buttons on cabinet ledge) -->
+          <div class="cabinet-ledge">
+            <div class="ledge-joystick">
+              <div class="joystick-knob" id="ledge-joystick-knob"></div>
+              <div class="joystick-shaft"></div>
+              <div class="joystick-base"></div>
+            </div>
+            <div class="ledge-buttons">
+              <span class="ledge-btn red" id="ledge-btn-1"></span>
+              <span class="ledge-btn red" id="ledge-btn-2"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Finite Automata Illustration Screen -->
+      <section class="automata-panel-wrapper">
+        <div class="automata-frame">
+          <div class="automata-header">
+            <h2 id="automata-type-title">DFA</h2>
+            <div id="automata-subtitle">Standard Machine Cycle</div>
+          </div>
+
+          <div class="automata-content-area" id="automata-content-area">
+            <!-- Screen for State Diagrams -->
+            <div class="automata-screen-container">
+              <canvas id="automata-canvas" width="460" height="340"></canvas>
+              
+              <!-- State Info Ticker -->
+              <div class="state-ticker">
+                <span class="ticker-label">Active State:</span>
+                <span id="active-state-display" class="ticker-value">q0 (IDLE)</span>
+                <span class="ticker-rule" id="state-rule-display">Wait for COIN [C]</span>
+              </div>
+            </div>
+
+            <!-- Cheats Sub-Panel (Only visible when Cheat ON!) -->
+            <aside class="cheats-panel" id="cheats-panel" style="display: none;">
+              <h3 class="cheats-title">Cheats</h3>
+              
+              <div class="cheat-item">
+                <div class="cheat-label">Unli Coin:</div>
+                <label class="pixel-toggle">
+                  <input type="checkbox" id="toggle-unli-coin" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="cheat-item">
+                <div class="cheat-label">Increase<br>Chance by 15%:</div>
+                <label class="pixel-toggle">
+                  <input type="checkbox" id="toggle-boost-chance" checked>
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div class="cheat-stats">
+                <div class="stat-line">Catch Rate: <span id="catch-rate-stat" class="boosted">95%</span></div>
+                <div class="stat-sub">Normal: 80%</div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Bottom Controls & Console Bar -->
+    <footer class="bottom-console">
+      <!-- 1. D-Pad -->
+      <div class="console-module dpad-module">
+        <div class="dpad-grid">
+          <button class="dpad-btn up" id="btn-up" title="Move Up [W / Up]"><span>W</span></button>
+          <button class="dpad-btn left" id="btn-left" title="Move Left [A / Left]"><span>A</span></button>
+          <button class="dpad-btn right" id="btn-right" title="Move Right [D / Right]"><span>D</span></button>
+          <button class="dpad-btn down" id="btn-down" title="Move Down [S / Down]"><span>S</span></button>
+        </div>
+      </div>
+
+      <!-- 2. Drop Button -->
+      <div class="console-module drop-module">
+        <button class="drop-btn" id="btn-drop" title="Drop Claw [Enter / Space]">
+          <span>DROP<br>[Enter]</span>
+        </button>
+      </div>
+
+      <!-- 3. Coins Left Indicator -->
+      <div class="console-module coins-module">
+        <div class="module-title">COINS LEFT:</div>
+        <div class="coins-display" id="coins-container">
+          <span class="coin-icon"></span>
+          <span class="coin-icon"></span>
+          <span class="coin-icon"></span>
+          <span class="coin-icon"></span>
+          <span class="coin-icon"></span>
+        </div>
+      </div>
+
+      <!-- 4. Coin Slot -->
+      <div class="console-module coin-slot-module">
+        <div class="module-title">Insert Coin [C]</div>
+        <button class="coin-slot-btn" id="btn-insert-coin" title="Insert Coin [C]">
+          <div class="coin-slot-hole"></div>
+        </button>
+      </div>
+
+      <!-- 5. Cheat Code Book Toggle -->
+      <div class="console-module cheat-toggle-module">
+        <button class="cheat-toggle-btn" id="btn-cheat-toggle" title="Toggle Cheat [Shift + C]">
+          <div class="pixel-book-icon">
+            <div class="book-pages">
+              <span class="page-line"></span>
+              <span class="page-line"></span>
+              <span class="page-line"></span>
+            </div>
+            <div class="book-pages right">
+              <span class="page-line"></span>
+              <span class="page-line"></span>
+              <span class="page-line"></span>
+            </div>
+          </div>
+          <div class="cheat-text-group">
+            <span id="cheat-action-text">Enable Cheat Code</span>
+            <span class="cheat-key-hint">[ Shift + C ]</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- 6. Collection Shelf Drawer Trigger -->
+      <div class="console-module shelf-trigger-module">
+        <button class="shelf-btn" id="btn-open-shelf">
+          <span class="shelf-arrow">▲</span>
+          <span class="shelf-text">COLLECTION SHELF</span>
+        </button>
+      </div>
+    </footer>
+
+    <!-- Slide-Up Collection Shelf Modal / Drawer -->
+    <div class="collection-drawer" id="collection-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title">
+          <span>▲ PRIZE COLLECTION SHELF ▲</span>
+          <span class="prize-count-badge">Total Won: <b id="total-prizes-count">0</b></span>
+        </div>
+        <button class="drawer-close-btn" id="btn-close-shelf">▼ CLOSE</button>
+      </div>
+      <div class="drawer-grid" id="shelf-items-grid">
+        <div class="shelf-empty-msg">No plushies caught yet! Insert a coin and drop the claw!</div>
+      </div>
+    </div>
+
+    <!-- Backdrop for drawer -->
+    <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  </div>
+
+  <!-- Audio, Physics, Automata, and App Scripts -->
+  <script type="module" src="js/main.js?v=2"></script>
+</body>
+</html>
