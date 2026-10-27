@@ -149,7 +149,6 @@ export class NFAEngine {
       if (this.coinIdx === this.seqCoin.length) {
         this.coinIdx = 0;
         this.unliCoinActive = !this.unliCoinActive;
-        this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
         unlockedSomething = true;
       }
     } else {
@@ -162,11 +161,16 @@ export class NFAEngine {
       if (this.luckIdx === this.seqLuck.length) {
         this.luckIdx = 0;
         this.boostChanceActive = !this.boostChanceActive;
-        this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
         unlockedSomething = true;
       }
     } else {
       this.luckIdx = (k === this.seqLuck[0]) ? 1 : 0;
+    }
+
+    // If a cheat is active, ensure cheatEnabled is true.
+    // If cheatEnabled was already true (NFA mode active), keep it true so Q8 remains active!
+    if (this.unliCoinActive || this.boostChanceActive) {
+      this.cheatEnabled = true;
     }
 
     this.recomputeActiveStates();
@@ -189,7 +193,9 @@ export class NFAEngine {
       this.boostChanceActive = isActive;
     }
 
-    this.cheatEnabled = this.unliCoinActive || this.boostChanceActive;
+    if (this.unliCoinActive || this.boostChanceActive) {
+      this.cheatEnabled = true;
+    }
     this.recomputeActiveStates();
     this.notify();
   }
