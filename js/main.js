@@ -274,6 +274,13 @@ class App {
     setupDpad(this.btnLeft, -1, 0);
     setupDpad(this.btnRight, 1, 0);
 
+    // Prevent buttons from keeping focus after click so Enter/Space never trigger them
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.closest('button')) {
+        e.target.closest('button').blur();
+      }
+    });
+
     // Continuous Keyboard Listeners
     const pressedKeys = new Set();
 
@@ -285,24 +292,26 @@ class App {
         return;
       }
 
-      // 2. Feed key into NFA pattern matcher (e.g. typing C-O-I-N or L-U-C-K or C-L-A-W)
-      const res = this.nfa.feedInput(e.key);
+      // 2. Feed key into NFA pattern matcher (only single printable characters)
+      if (e.key && e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const res = this.nfa.feedInput(e.key);
 
-      // Light up matched keycaps in Cheats panel
-      this.seqUnliKeycaps.forEach((cap, idx) => {
-        cap.classList.toggle('lit', idx < res.coinIdx);
-      });
-      this.seqBoostKeycaps.forEach((cap, idx) => {
-        cap.classList.toggle('lit', idx < res.luckIdx);
-      });
+        // Light up matched keycaps in Cheats panel
+        this.seqUnliKeycaps.forEach((cap, idx) => {
+          cap.classList.toggle('lit', idx < res.coinIdx);
+        });
+        this.seqBoostKeycaps.forEach((cap, idx) => {
+          cap.classList.toggle('lit', idx < res.luckIdx);
+        });
 
-      if (res.unlocked) {
-        sound.playCheatUnlock();
-        if (this.mode !== 'NFA') {
-          this.setMode('NFA');
-        } else {
-          this.updateCheatsUI();
-          this.updateCoinsDisplay();
+        if (res.unlocked) {
+          sound.playCheatUnlock();
+          if (this.mode !== 'NFA') {
+            this.setMode('NFA');
+          } else {
+            this.updateCheatsUI();
+            this.updateCoinsDisplay();
+          }
         }
       }
 
@@ -319,6 +328,7 @@ class App {
       }
 
       if (e.key === 'Enter' || e.code === 'Space') {
+        e.preventDefault();
         this.btnDrop.classList.add('active');
         this.clawMachine.dropClaw();
       }
@@ -329,6 +339,7 @@ class App {
       pressedKeys.delete(k);
 
       if (e.key === 'Enter' || e.code === 'Space') {
+        e.preventDefault();
         this.btnDrop.classList.remove('active');
       }
     });
