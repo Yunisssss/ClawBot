@@ -61,12 +61,12 @@ export class ClawMachine {
       SPRITE_TYPES.PIKACHU,
     ];
 
-    // Create a cozy heap of plushies across the prize floor (x: 100 to 425)
-    const count = 15;
+    // Create a cozy heap of plushies across the prize floor (x: 100 to 520)
+    const count = 18;
     for (let i = 0; i < count; i++) {
       const type = types[i % types.length];
-      const x = 110 + (i / count) * 300 + (Math.random() * 24 - 12);
-      const y = 280 + (Math.sin(i * 1.5) * 12);
+      const x = 110 + (i / count) * 400 + (Math.random() * 20 - 10);
+      const y = 340 + (Math.sin(i * 1.5) * 14);
       this.plushies.push({
         id: `plushie_${Date.now()}_${i}`,
         type,
@@ -74,7 +74,7 @@ export class ClawMachine {
         y,
         baseY: y,
         rotation: (Math.random() - 0.5) * 0.3,
-        size: 42,
+        size: 44,
       });
     }
   }
@@ -106,7 +106,7 @@ export class ClawMachine {
 
     // Move gantry within play boundary
     const minX = 96;
-    const maxX = 424;
+    const maxX = 516;
     const minY = 28;
     const maxY = 48;
 
@@ -133,9 +133,9 @@ export class ClawMachine {
     // 2. Update status state machine
     if (this.status === 'DROPPING') {
       this.clawY += this.dropSpeed;
-      // Check collision with prize bed or floor (around y = 275)
-      if (this.clawY >= 270) {
-        this.clawY = 270;
+      // Check collision with prize bed or floor (around y = 335)
+      if (this.clawY >= 335) {
+        this.clawY = 335;
         this.status = 'GRABBING';
         this.targetOpen = 0.1; // clamp claws shut
         sound.playGrab();

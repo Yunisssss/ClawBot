@@ -45,7 +45,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, var(--bg-sky) 0%, var(--bg-sky-light) 65%, #d5ebf9 100%);
+  background: linear-gradient(135deg, #A0D0EE 0%, #E9C9EE 100%);
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -53,13 +53,13 @@ body {
   font-family: var(--font-pixel);
   color: #1a1a1a;
   overflow-x: hidden;
-  padding: 10px;
+  padding: 12px 18px;
 }
 
 /* Main Arcade Wrapper */
 .arcade-app {
-  width: 100%;
-  max-width: 1040px;
+  width: 98vw;
+  max-width: 1400px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -202,7 +202,7 @@ body {
 /* Glass Frame */
 .cabinet-glass-frame {
   position: relative;
-  height: 330px;
+  height: 390px;
   background-color: var(--cabinet-inner-gray);
   border: 3px solid #33242e;
   margin: 6px 8px;
@@ -374,7 +374,7 @@ body {
 }
 
 .automata-content-area.has-cheats {
-  grid-template-columns: 1fr 130px;
+  grid-template-columns: 1fr 185px;
 }
 
 /* Screen container inside automata frame */
@@ -387,7 +387,7 @@ body {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  height: 345px;
+  height: 405px;
 }
 
 #automata-canvas {
@@ -400,8 +400,8 @@ body {
 .state-ticker {
   background-color: rgba(43, 22, 35, 0.88);
   border-top: 2px solid #5a334b;
-  padding: 6px 8px;
-  font-size: 8px;
+  padding: 8px 10px;
+  font-size: 8.5px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -410,7 +410,7 @@ body {
 
 .ticker-label {
   color: #ffcae0;
-  font-size: 7.5px;
+  font-size: 8px;
 }
 
 .ticker-value {
@@ -421,18 +421,18 @@ body {
 .ticker-rule {
   margin-left: auto;
   color: #8be9fd;
-  font-size: 7px;
+  font-size: 7.5px;
 }
 
-/* Cheats Sub-Panel */
+/* Cheats Sub-Panel (Key Combination Cards) */
 .cheats-panel {
   background-color: var(--illustration-pink);
   border: 2px solid var(--illustration-pink-border);
   border-radius: 2px;
-  padding: 8px 6px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .cheats-title {
@@ -443,60 +443,86 @@ body {
   padding-bottom: 4px;
 }
 
-.cheat-item {
+.cheat-card {
+  background-color: #fff;
+  border: 2px solid var(--illustration-pink-border);
+  border-radius: 4px;
+  padding: 8px 6px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  box-shadow: 1px 2px 0 rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
 }
 
-.cheat-label {
+.cheat-card:hover {
+  border-color: #333;
+}
+
+.cheat-card:active {
+  transform: translateY(1px);
+}
+
+.cheat-header-label {
   font-size: 7.5px;
   line-height: 1.4;
   color: #2b1f26;
+  font-weight: bold;
 }
 
-/* Pixel Toggle Switch */
-.pixel-toggle {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 20px;
-  cursor: pointer;
+.key-sequence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 3px 0;
 }
 
-.pixel-toggle input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #888;
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #fcfcfc;
   border: 2px solid #333;
-  transition: 0.15s;
-  border-radius: 2px;
+  border-radius: 3px;
+  box-shadow: 0 2px 0 #333;
+  font-family: var(--font-pixel);
+  font-size: 8.5px;
+  font-weight: bold;
+  color: #111;
+  transition: background-color 0.12s, transform 0.08s;
 }
 
-.toggle-slider:before {
-  position: absolute;
-  content: "";
-  height: 12px;
-  width: 12px;
-  left: 2px;
-  top: 2px;
-  background-color: #fff;
-  border: 1px solid #333;
-  transition: 0.15s;
+.keycap.lit {
+  background-color: #ffe600;
+  border-color: #7a5400;
+  box-shadow: 0 1px 0 #7a5400;
+  transform: translateY(1px);
 }
 
-.pixel-toggle input:checked + .toggle-slider {
-  background-color: #55c760;
+.cheat-status-badge {
+  font-size: 7px;
+  text-align: center;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
-.pixel-toggle input:checked + .toggle-slider:before {
-  transform: translateX(24px);
+.cheat-status-badge.active {
+  background-color: #4cd964;
+  color: #0b3d11;
+  border: 1.5px solid #238032;
+  box-shadow: 0 0 4px rgba(76, 217, 100, 0.4);
+}
+
+.cheat-status-badge.locked {
+  background-color: #ddd;
+  color: #666;
+  border: 1px solid #aaa;
 }
 
 .cheat-stats {
@@ -518,8 +544,8 @@ body {
    ======================================================== */
 .bottom-console {
   display: grid;
-  grid-template-columns: 88px 94px 170px 140px 190px 1fr;
-  gap: 10px;
+  grid-template-columns: 100px 115px 220px 170px 240px 1fr;
+  gap: 12px;
   align-items: center;
 }
 
@@ -527,14 +553,14 @@ body {
   background-color: var(--cabinet-pink);
   border: 2.5px solid var(--cabinet-pink-border);
   border-radius: 4px;
-  height: 72px;
+  height: 82px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   box-shadow: 2px 2px 0px rgba(0,0,0,0.15);
   position: relative;
-  padding: 4px;
+  padding: 6px;
 }
 
 .module-title {
@@ -554,19 +580,19 @@ body {
 
 .dpad-grid {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 78px;
+  height: 78px;
 }
 
 .dpad-btn {
   position: absolute;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   background-color: var(--dpad-pink);
   border: 1.5px solid var(--cabinet-pink-border);
   color: var(--dpad-text);
   font-family: var(--font-pixel);
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -583,10 +609,10 @@ body {
   box-shadow: 0 0 0;
 }
 
-.dpad-btn.up { top: 0; left: 24px; }
-.dpad-btn.left { top: 24px; left: 0; }
-.dpad-btn.right { top: 24px; left: 48px; }
-.dpad-btn.down { top: 48px; left: 24px; }
+.dpad-btn.up { top: 0; left: 26px; }
+.dpad-btn.left { top: 26px; left: 0; }
+.dpad-btn.right { top: 26px; left: 52px; }
+.dpad-btn.down { top: 52px; left: 26px; }
 
 /* 2. Drop Button Module */
 .drop-module {
@@ -596,15 +622,15 @@ body {
 }
 
 .drop-btn {
-  width: 68px;
-  height: 68px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #f77e77, var(--drop-red) 70%, #993731 100%);
   border: 3px solid #5a1915;
   box-shadow: 0 4px 0 var(--drop-red-shadow);
   color: #fff;
   font-family: var(--font-pixel);
-  font-size: 8px;
+  font-size: 8.5px;
   line-height: 1.4;
   cursor: pointer;
   display: flex;

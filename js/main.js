@@ -24,9 +24,16 @@ class App {
     this.stateRuleDisplay = document.getElementById('state-rule-display');
     this.coinsContainer = document.getElementById('coins-container');
     this.cheatActionText = document.getElementById('cheat-action-text');
-    this.toggleUnliCoin = document.getElementById('toggle-unli-coin');
-    this.toggleBoostChance = document.getElementById('toggle-boost-chance');
     this.catchRateStat = document.getElementById('catch-rate-stat');
+
+    // Cheats Panel Specific Card Elements
+    this.cardUnliCoin = document.getElementById('card-unli-coin');
+    this.statusUnli = document.getElementById('status-unli');
+    this.seqUnliKeycaps = document.querySelectorAll('#seq-unli .keycap');
+
+    this.cardBoostChance = document.getElementById('card-boost-chance');
+    this.statusBoost = document.getElementById('status-boost');
+    this.seqBoostKeycaps = document.querySelectorAll('#seq-boost .keycap');
 
     // Decorative Ledge Joystick Knob
     this.ledgeJoystickKnob = document.getElementById('ledge-joystick-knob');
@@ -45,6 +52,7 @@ class App {
     this.initGame();
     this.initControls();
     this.updateCoinsDisplay();
+    this.updateCheatsUI();
   }
 
   initAutomata() {
@@ -120,14 +128,36 @@ class App {
       this.stateRuleDisplay.textContent = this.dfa.getCurrentStateInfo().desc;
     }
 
-    // 4. Update Game Mechanics Flags
-    this.clawMachine.unliCoins = isCheat && this.toggleUnliCoin.checked;
-    this.clawMachine.boostChance = isCheat && this.toggleBoostChance.checked;
+    this.updateCheatsUI();
     this.updateCoinsDisplay();
   }
 
   toggleMode() {
     this.setMode(this.mode === 'DFA' ? 'NFA' : 'DFA');
+  }
+
+  updateCheatsUI() {
+    const isCheat = this.mode === 'NFA';
+
+    // Update Unlimited Coin Card
+    const unliActive = isCheat && this.nfa.unliCoinActive;
+    this.clawMachine.unliCoins = unliActive;
+    if (this.statusUnli) {
+      this.statusUnli.className = `cheat-status-badge ${unliActive ? 'active' : 'locked'}`;
+      this.statusUnli.textContent = unliActive ? 'ACTIVE' : 'TYPE C-O-I-N';
+    }
+
+    // Update +15% Boost Card
+    const boostActive = isCheat && this.nfa.boostChanceActive;
+    this.clawMachine.boostChance = boostActive;
+    if (this.statusBoost) {
+      this.statusBoost.className = `cheat-status-badge ${boostActive ? 'active' : 'locked'}`;
+      this.statusBoost.textContent = boostActive ? 'ACTIVE' : 'TYPE L-U-C-K';
+    }
+    if (this.catchRateStat) {
+      this.catchRateStat.textContent = boostActive ? '95%' : '80%';
+      this.catchRateStat.className = boostActive ? 'boosted' : '';
+    }
   }
 
   updateCoinsDisplay() {
@@ -163,19 +193,23 @@ class App {
     this.modeBadge.addEventListener('click', () => this.toggleMode());
     this.btnCheatToggle.addEventListener('click', () => this.toggleMode());
 
-    // Cheat Panel Checkboxes
-    this.toggleUnliCoin.addEventListener('change', (e) => {
-      this.nfa.setModifier('unli', e.target.checked);
-      this.clawMachine.unliCoins = e.target.checked;
-      this.updateCoinsDisplay();
-    });
+    // Click cheat cards to toggle
+    if (this.cardUnliCoin) {
+      this.cardUnliCoin.addEventListener('click', () => {
+        this.nfa.unliCoinActive = !this.nfa.unliCoinActive;
+        this.nfa.setModifier('unli', this.nfa.unliCoinActive);
+        this.updateCheatsUI();
+        this.updateCoinsDisplay();
+      });
+    }
 
-    this.toggleBoostChance.addEventListener('change', (e) => {
-      this.nfa.setModifier('boost', e.target.checked);
-      this.clawMachine.boostChance = e.target.checked;
-      this.catchRateStat.textContent = e.target.checked ? '95%' : '80%';
-      this.catchRateStat.className = e.target.checked ? 'boosted' : '';
-    });
+    if (this.cardBoostChance) {
+      this.cardBoostChance.addEventListener('click', () => {
+        this.nfa.boostChanceActive = !this.nfa.boostChanceActive;
+        this.nfa.setModifier('boost', this.nfa.boostChanceActive);
+        this.updateCheatsUI();
+      });
+    }
 
     // Coin Insert
     this.btnInsertCoin.addEventListener('click', () => {
@@ -228,10 +262,25 @@ class App {
         return;
       }
 
-      // 2. Feed key into NFA pattern matcher (e.g. typing C-L-A-W)
-      const unlocked = this.nfa.feedInput(e.key);
-      if (unlocked && this.mode !== 'NFA') {
-        this.setMode('NFA');
+      // 2. Feed key into NFA pattern matcher (e.g. typing C-O-I-N or L-U-C-K or C-L-A-W)
+      const res = this.nfa.feedInput(e.key);
+
+      // Light up matched keycaps in Cheats panel
+      this.seqUnliKeycaps.forEach((cap, idx) => {
+        cap.classList.toggle('lit', idx < res.coinIdx);
+      });
+      this.seqBoostKeycaps.forEach((cap, idx) => {
+        cap.classList.toggle('lit', idx < res.luckIdx);
+      });
+
+      if (res.unlocked) {
+        sound.playCheatUnlock();
+        if (this.mode !== 'NFA') {
+          this.setMode('NFA');
+        } else {
+          this.updateCheatsUI();
+          this.updateCoinsDisplay();
+        }
       }
 
       // 3. Gameplay Controls

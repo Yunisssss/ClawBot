@@ -1,19 +1,19 @@
 /**
  * CLAWBOT - Nondeterministic Finite Automaton (NFA) Engine
  * Formal 5-tuple: N = (Q, Σ, δ, q0, F)
- * Illustrates multi-state subset tracking and ε-transitions for the cheat sequence
+ * Illustrates multi-state subset tracking and ε-transitions for cheat sequences
  */
 
 export const NFA_STATES = {
-  s0: { id: 's0', name: 'START', label: 's0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 45, y: 70 },
-  s1: { id: 's1', name: 'KEY_C', label: 's1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 140, y: 70 },
-  s2: { id: 's2', name: 'KEY_L', label: 's2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 235, y: 70 },
-  s3: { id: 's3', name: 'KEY_A', label: 's3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 330, y: 70 },
-  s4: { id: 's4', name: 'UNLOCK', label: 's4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 415, y: 70 },
+  s0: { id: 's0', name: 'START', label: 's0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 55, y: 85 },
+  s1: { id: 's1', name: 'KEY_C', label: 's1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 165, y: 85 },
+  s2: { id: 's2', name: 'KEY_L', label: 's2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 275, y: 85 },
+  s3: { id: 's3', name: 'KEY_A', label: 's3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 385, y: 85 },
+  s4: { id: 's4', name: 'UNLOCK', label: 's4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 495, y: 85 },
   
   // ε-transition sub-states for cheat modifiers
-  s_unli: { id: 's_unli', name: 'UNLI_COIN', label: 'ε: UNLI COIN', desc: 'Infinite Tokens Active', isFinal: true, x: 235, y: 220 },
-  s_boost: { id: 's_boost', name: 'BOOST_15', label: 'ε: BOOST +15%', desc: 'Claw Grip +15% Stability', isFinal: true, x: 390, y: 220 },
+  s_unli: { id: 's_unli', name: 'UNLI_COIN', label: 'ε: UNLI COIN', desc: 'C-O-I-N Unlocked', isFinal: true, x: 275, y: 260 },
+  s_boost: { id: 's_boost', name: 'BOOST_15', label: 'ε: BOOST +15%', desc: 'L-U-C-K Unlocked', isFinal: true, x: 460, y: 260 },
 };
 
 export const NFA_TRANSITIONS = [
@@ -41,10 +41,23 @@ export class NFAEngine {
     this.cheatEnabled = false;
     this.unliCoinActive = true;
     this.boostChanceActive = true;
+
+    // Separate 4-key sequences for each specific cheat code
+    this.seqCoin = ['C', 'O', 'I', 'N'];
+    this.coinIdx = 0;
+
+    this.seqLuck = ['L', 'U', 'C', 'K'];
+    this.luckIdx = 0;
+
+    this.seqClaw = ['C', 'L', 'A', 'W'];
+    this.clawIdx = 0;
   }
 
   reset() {
     this.activeStates = new Set(['s0']);
+    this.coinIdx = 0;
+    this.luckIdx = 0;
+    this.clawIdx = 0;
     this.notify();
   }
 
@@ -66,8 +79,47 @@ export class NFAEngine {
   feedInput(key) {
     const k = (key || '').toUpperCase();
     const nextStates = new Set(['s0']); // s0 always remains active (self-loop on any input)
+    let unlockedSomething = false;
 
-    // Check branch transitions from all currently active states
+    // 1. Check C-L-A-W sequence
+    if (k === this.seqClaw[this.clawIdx]) {
+      this.clawIdx++;
+      if (this.clawIdx === this.seqClaw.length) {
+        this.clawIdx = 0;
+        this.cheatEnabled = true;
+        this.unliCoinActive = true;
+        this.boostChanceActive = true;
+        unlockedSomething = true;
+      }
+    } else {
+      this.clawIdx = (k === this.seqClaw[0]) ? 1 : 0;
+    }
+
+    // 2. Check C-O-I-N sequence (Unli Coin)
+    if (k === this.seqCoin[this.coinIdx]) {
+      this.coinIdx++;
+      if (this.coinIdx === this.seqCoin.length) {
+        this.coinIdx = 0;
+        this.unliCoinActive = !this.unliCoinActive; // Toggle specific cheat
+        unlockedSomething = true;
+      }
+    } else {
+      this.coinIdx = (k === this.seqCoin[0]) ? 1 : 0;
+    }
+
+    // 3. Check L-U-C-K sequence (Increase Chance by 15%)
+    if (k === this.seqLuck[this.luckIdx]) {
+      this.luckIdx++;
+      if (this.luckIdx === this.seqLuck.length) {
+        this.luckIdx = 0;
+        this.boostChanceActive = !this.boostChanceActive; // Toggle specific cheat
+        unlockedSomething = true;
+      }
+    } else {
+      this.luckIdx = (k === this.seqLuck[0]) ? 1 : 0;
+    }
+
+    // Branch transitions from all currently active states (NFA simulation)
     this.activeStates.forEach(stateId => {
       if (stateId === 's0' && k === 'C') {
         nextStates.add('s1');
@@ -77,24 +129,27 @@ export class NFAEngine {
         nextStates.add('s3');
       } else if (stateId === 's3' && k === 'W') {
         nextStates.add('s4');
-        // ε-transitions
-        if (this.unliCoinActive) nextStates.add('s_unli');
-        if (this.boostChanceActive) nextStates.add('s_boost');
-        this.cheatEnabled = true;
       }
     });
 
-    // If cheat was already active, preserve cheat states
-    if (this.cheatEnabled) {
+    if (this.cheatEnabled || this.unliCoinActive || this.boostChanceActive) {
       nextStates.add('s4');
       if (this.unliCoinActive) nextStates.add('s_unli');
       if (this.boostChanceActive) nextStates.add('s_boost');
+      this.cheatEnabled = true;
     }
 
     this.activeStates = nextStates;
     this.notify();
 
-    return this.cheatEnabled;
+    return {
+      unlocked: unlockedSomething,
+      cheatEnabled: this.cheatEnabled,
+      unliActive: this.unliCoinActive,
+      boostActive: this.boostChanceActive,
+      coinIdx: this.coinIdx,
+      luckIdx: this.luckIdx,
+    };
   }
 
   setModifier(modifierKey, isActive) {

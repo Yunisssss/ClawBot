@@ -46,7 +46,7 @@
             <div class="glass-reflection-bar left"></div>
             <div class="glass-reflection-bar right"></div>
             
-            <canvas id="claw-canvas" width="460" height="340"></canvas>
+            <canvas id="claw-canvas" width="560" height="400"></canvas>
             
             <!-- Chute Indicator Overlay -->
             <div class="chute-guard">
@@ -81,7 +81,7 @@
           <div class="automata-content-area" id="automata-content-area">
             <!-- Screen for State Diagrams -->
             <div class="automata-screen-container">
-              <canvas id="automata-canvas" width="460" height="340"></canvas>
+              <canvas id="automata-canvas" width="560" height="400"></canvas>
               
               <!-- State Info Ticker -->
               <div class="state-ticker">
@@ -91,24 +91,32 @@
               </div>
             </div>
 
-            <!-- Cheats Sub-Panel (Only visible when Cheat ON!) -->
+            <!-- Cheats Sub-Panel (Shows Key Combinations) -->
             <aside class="cheats-panel" id="cheats-panel" style="display: none;">
               <h3 class="cheats-title">Cheats</h3>
               
-              <div class="cheat-item">
-                <div class="cheat-label">Unli Coin:</div>
-                <label class="pixel-toggle">
-                  <input type="checkbox" id="toggle-unli-coin" checked>
-                  <span class="toggle-slider"></span>
-                </label>
+              <!-- Cheat 1: Unlimited Coin -->
+              <div class="cheat-card" id="card-unli-coin" title="Type C-O-I-N to unlock">
+                <div class="cheat-header-label">Unli Coin:</div>
+                <div class="key-sequence" id="seq-unli">
+                  <span class="keycap" data-key="C">C</span>
+                  <span class="keycap" data-key="O">O</span>
+                  <span class="keycap" data-key="I">I</span>
+                  <span class="keycap" data-key="N">N</span>
+                </div>
+                <div class="cheat-status-badge active" id="status-unli">ACTIVE</div>
               </div>
 
-              <div class="cheat-item">
-                <div class="cheat-label">Increase<br>Chance by 15%:</div>
-                <label class="pixel-toggle">
-                  <input type="checkbox" id="toggle-boost-chance" checked>
-                  <span class="toggle-slider"></span>
-                </label>
+              <!-- Cheat 2: Increase Chance by 15% -->
+              <div class="cheat-card" id="card-boost-chance" title="Type L-U-C-K to unlock">
+                <div class="cheat-header-label">Increase<br>Chance by 15%:</div>
+                <div class="key-sequence" id="seq-boost">
+                  <span class="keycap" data-key="L">L</span>
+                  <span class="keycap" data-key="U">U</span>
+                  <span class="keycap" data-key="C">C</span>
+                  <span class="keycap" data-key="K">K</span>
+                </div>
+                <div class="cheat-status-badge active" id="status-boost">ACTIVE</div>
               </div>
 
               <div class="cheat-stats">
