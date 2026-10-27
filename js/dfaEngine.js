@@ -5,7 +5,7 @@
  */
 
 export const DFA_STATES = {
-  Q0: { id: 'Q0', name: 'IDLE', label: 'Q0: IDLE', desc: 'Waiting for COIN [C]', isFinal: false, x: 70, y: 90 },
+  Q0: { id: 'Q0', name: 'IDLE', label: 'Q0: IDLE', desc: 'Waiting for COIN [P]', isFinal: false, x: 70, y: 90 },
   Q1: { id: 'Q1', name: 'READY', label: 'Q1: READY', desc: 'Coin Loaded. Use WASD', isFinal: false, x: 240, y: 90 },
   Q2: { id: 'Q2', name: 'AIMING', label: 'Q2: AIMING', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 420, y: 90 },
   Q3: { id: 'Q3', name: 'DROPPING', label: 'Q3: DROP', desc: 'Claw Descending...', isFinal: false, x: 600, y: 90 },
@@ -17,7 +17,7 @@ export const DFA_STATES = {
 
 // Transition Table δ(state, symbol) -> next_state
 export const DFA_TRANSITIONS = [
-  { from: 'Q0', to: 'Q1', symbol: 'COIN [C]' },
+  { from: 'Q0', to: 'Q1', symbol: 'COIN [P]' },
   { from: 'Q1', to: 'Q2', symbol: 'MOVE [WASD]' },
   { from: 'Q2', to: 'Q2', symbol: 'MOVE [WASD]' }, // Self-loop
   { from: 'Q2', to: 'Q3', symbol: 'DROP [Enter]' },

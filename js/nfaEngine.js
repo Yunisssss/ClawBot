@@ -90,19 +90,13 @@ export class NFAEngine {
 
   setCheatMode(enabled) {
     this.cheatEnabled = enabled;
-    if (enabled) {
-      this.unliCoinActive = true;
-      this.boostChanceActive = true;
-      this.activeStates = new Set(['Q0', 'Q4', 'Q8']);
-    } else {
-      // Disabling cheat code disables all cheats completely
-      this.unliCoinActive = false;
-      this.boostChanceActive = false;
-      this.coinIdx = 0;
-      this.luckIdx = 0;
-      this.gameplayState = null;
-      this.activeStates = new Set(['Q0']);
-    }
+    // Initially, no active cheat is on when Shift + C (enable cheat) is turned on
+    this.unliCoinActive = false;
+    this.boostChanceActive = false;
+    this.coinIdx = 0;
+    this.luckIdx = 0;
+    this.gameplayState = null;
+    this.activeStates = new Set(['Q0']);
     this.notify();
   }
 

@@ -28,7 +28,7 @@ To launch the simulator locally:
 ### Controls
 | Action | Keyboard | Screen Button |
 | :--- | :--- | :--- |
-| **Insert Coin** | `C` | Click **Insert Coin [C]** slot |
+| **Insert Coin** | `P` | Click **Insert Coin [P]** slot |
 | **Move Gantry** | `W`, `A`, `S`, `D` or Arrow Keys | Click D-Pad arrows (`W`, `A`, `S`, `D`) |
 | **Drop Claw** | `Enter` or `Space` | Click **DROP [Enter]** button |
 | **Toggle Mode / Cheat** | `Shift + C` | Click **Enable Cheat Code** or Top Badge |
@@ -42,22 +42,24 @@ To launch the simulator locally:
 In normal mode, the claw machine follows a classic **Deterministic Finite Automaton**:
 $$\delta: Q \times \Sigma \to Q$$
 * At any millisecond, the machine occupies **strictly ONE active state**.
+* **Catch Rate:** 50% normal grip probability.
 * **States ($Q$):**
-  * `q0: IDLE` — Waiting for coin insertion (`COIN [C]`)
-  * `q1: READY` — Credit loaded, carriage ready for movement
-  * `q2: AIMING` — User positioning claw with WASD (`MOVE [WASD]` self-loop)
-  * `q3: DROP` — Claw descending toward the prize bed (`DROP [Enter]`)
-  * `q4: GRAB` — Claws closing over plushies (`BOTTOM_TOUCH`)
-  * `q5: ASCEND` — Motor pulling claw up (`GRAB_DONE`)
-  * `q6: RETURN` — Carriage returning to chute (`TOP_LIMIT`)
-  * `q7: RESULT` — Prize drop evaluation & accepting state (`CHUTE_REACHED`) $\to$ resets to `q0`.
+  * `Q0: IDLE` — Waiting for coin insertion (`COIN [P]`)
+  * `Q1: READY` — Credit loaded, carriage ready for movement
+  * `Q2: AIMING` — User positioning claw with WASD (`MOVE [WASD]` self-loop)
+  * `Q3: DROP` — Claw descending toward the prize bed (`DROP [Enter]`)
+  * `Q4: GRAB` — Claws closing over plushies (`BOTTOM_TOUCH`)
+  * `Q5: ASCEND` — Motor pulling claw up (`GRAB_DONE`)
+  * `Q6: RETURN` — Carriage returning to chute (`TOP_LIMIT`)
+  * `Q7: RESULT` — Prize drop evaluation & accepting state (`CHUTE_REACHED`) $\to$ resets to `Q0`.
 
 ### 2. The NFA (Cheat ON Mode)
-In cheat mode, the illustration panel transforms into an **Nondeterministic Finite Automaton**:
+In cheat mode, the illustration panel transforms into an **Unified Nondeterministic Finite Automaton**:
 $$\delta: Q \times (\Sigma \cup \{\varepsilon\}) \to \mathcal{P}(Q)$$
-* The machine can occupy **MULTIPLE states simultaneously** (subset construction):
-  * Active set: `{ s0, s4, s_unli, s_boost }`
-* **Pattern Matching Non-determinism:**
+* When initially enabled, **no cheat is active** until typed!
+* **Cheats:**
+  * Type `C-O-I-N` to unlock Unlimited Coins ($Q_4$ via $\varepsilon \to Q_0$)
+  * Type `L-U-C-K` to unlock +15% Grip Boost ($Q_8$ via $\varepsilon \to Q_{12}$, boosting catch rate from 50% to 65%)
   * While receiving continuous player keypresses, state `s0` non-deterministically guesses whether each key is regular gameplay or the start of the cheat sequence (`C-L-A-W`):
     $$\delta(s_0, \text{'C'}) = \{s_0, s_1\}$$
 * **$\varepsilon$-Transitions:**

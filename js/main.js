@@ -175,7 +175,7 @@ class App {
       this.statusBoost.textContent = boostActive ? 'ACTIVE' : 'TYPE L-U-C-K';
     }
     if (this.catchRateStat) {
-      this.catchRateStat.textContent = boostActive ? '95%' : '80%';
+      this.catchRateStat.textContent = boostActive ? '65%' : '50%';
       this.catchRateStat.className = boostActive ? 'boosted' : '';
     }
   }
@@ -309,7 +309,7 @@ class App {
         pressedKeys.add(k);
       }
 
-      if (k === 'c' && !e.shiftKey) {
+      if (k === 'p') {
         if (this.clawMachine.insertCoin()) {
           this.updateCoinsDisplay();
         }

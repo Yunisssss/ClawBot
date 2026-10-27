@@ -130,7 +130,7 @@ export class ClawMachine {
     sound.playCoin();
     this.status = 'READY';
     this.startTimer();
-    this.dfa.transition('COIN [C]');
+    this.dfa.transition('COIN [P]');
     return true;
   }
 
@@ -286,8 +286,8 @@ export class ClawMachine {
 
     if (closest) {
       this.heldPlushie = closest;
-      // Calculate grip probability
-      const baseChance = 0.80; // 80% normal chance
+      // Calculate grip probability: 50% normal chance, 65% boosted (+15%)
+      const baseChance = 0.50;
       const finalChance = this.boostChance ? Math.min(0.98, baseChance + 0.15) : baseChance;
       this.isGrabFirm = Math.random() < finalChance;
     } else {

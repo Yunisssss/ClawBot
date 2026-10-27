@@ -92,7 +92,7 @@
               <div class="state-ticker">
                 <span class="ticker-label">Active State:</span>
                 <span id="active-state-display" class="ticker-value">Q0: IDLE</span>
-                <span class="ticker-rule" id="state-rule-display">Wait for COIN [C]</span>
+                <span class="ticker-rule" id="state-rule-display">Wait for COIN [P]</span>
               </div>
             </div>
 
@@ -109,7 +109,7 @@
                   <span class="keycap" data-key="I">I</span>
                   <span class="keycap" data-key="N">N</span>
                 </div>
-                <div class="cheat-status-badge active" id="status-unli">ACTIVE</div>
+                <div class="cheat-status-badge locked" id="status-unli">TYPE C-O-I-N</div>
               </div>
 
               <!-- Cheat 2: Increase Chance by 15% -->
@@ -121,12 +121,12 @@
                   <span class="keycap" data-key="C">C</span>
                   <span class="keycap" data-key="K">K</span>
                 </div>
-                <div class="cheat-status-badge active" id="status-boost">ACTIVE</div>
+                <div class="cheat-status-badge locked" id="status-boost">TYPE L-U-C-K</div>
               </div>
 
               <div class="cheat-stats">
-                <div class="stat-line">Catch Rate: <span id="catch-rate-stat" class="boosted">95%</span></div>
-                <div class="stat-sub">Normal: 80%</div>
+                <div class="stat-line">Catch Rate: <span id="catch-rate-stat">50%</span></div>
+                <div class="stat-sub">Normal: 50%</div>
               </div>
             </aside>
           </div>
@@ -167,8 +167,8 @@
 
       <!-- 4. Coin Slot -->
       <div class="console-module coin-slot-module">
-        <div class="module-title">Insert Coin [C]</div>
-        <button class="coin-slot-btn" id="btn-insert-coin" title="Insert Coin [C]">
+        <div class="module-title">Insert Coin [P]</div>
+        <button class="coin-slot-btn" id="btn-insert-coin" title="Insert Coin [P]">
           <div class="coin-slot-hole"></div>
         </button>
       </div>
@@ -223,6 +223,6 @@
   </div>
 
   <!-- Audio, Physics, Automata, and App Scripts -->
-  <script type="module" src="js/main.js?v=7"></script>
+  <script type="module" src="js/main.js?v=8"></script>
 </body>
 </html>
