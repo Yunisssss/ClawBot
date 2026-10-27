@@ -447,30 +447,32 @@ body {
 
 /* State Ticker Bar on Automata Screen */
 .state-ticker {
-  background-color: rgba(43, 22, 35, 0.88);
+  background-color: rgba(43, 22, 35, 0.92);
   border-top: 2px solid #5a334b;
-  padding: 8px 10px;
-  font-size: 8.5px;
+  padding: 8px 12px;
+  font-size: 9px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: #f7e6ef;
+  min-height: 32px;
 }
 
 .ticker-label {
   color: #ffcae0;
-  font-size: 8px;
+  font-size: 8.5px;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .ticker-value {
   color: #ffe600;
   font-weight: bold;
-}
-
-.ticker-rule {
-  margin-left: auto;
-  color: #8be9fd;
-  font-size: 7.5px;
+  font-size: 9.5px;
+  flex: 1;
+  letter-spacing: 0.8px;
+  word-break: break-word;
+  line-height: 1.4;
 }
 
 /* Cheats Sub-Panel (Key Combination Cards) */

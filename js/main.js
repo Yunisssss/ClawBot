@@ -21,7 +21,6 @@ class App {
     this.automataContentArea = document.getElementById('automata-content-area');
     this.cheatsPanel = document.getElementById('cheats-panel');
     this.activeStateDisplay = document.getElementById('active-state-display');
-    this.stateRuleDisplay = document.getElementById('state-rule-display');
     this.coinsContainer = document.getElementById('coins-container');
     this.cheatActionText = document.getElementById('cheat-action-text');
     this.catchRateStat = document.getElementById('catch-rate-stat');
@@ -64,7 +63,6 @@ class App {
       if (this.mode === 'DFA') {
         this.renderer.setActiveStates(stateInfo.id);
         this.activeStateDisplay.textContent = stateInfo.label;
-        this.stateRuleDisplay.textContent = symbol ? `Trigger: ${symbol}` : stateInfo.desc;
       }
       // Keep NFA synced with gameplay state
       this.nfa.setGameplayState(stateInfo.id);
@@ -76,13 +74,6 @@ class App {
         this.renderer.setActiveStates(activeStatesList);
         const statesStr = `{ ${activeStatesList.join(', ')} }`;
         this.activeStateDisplay.textContent = statesStr;
-        if (activeStatesList.includes('Q12') || activeStatesList.includes('Q16')) {
-          this.stateRuleDisplay.textContent = 'Cheat Active via ε-Transition!';
-        } else if (activeStatesList.some(s => ['Q9', 'Q10', 'Q11', 'Q13', 'Q14', 'Q15'].includes(s))) {
-          this.stateRuleDisplay.textContent = 'Matching Cheat Keystrokes...';
-        } else {
-          this.stateRuleDisplay.textContent = 'Active Gameplay + Cheat Stream (Σ*)';
-        }
       }
     });
 
@@ -148,7 +139,6 @@ class App {
       
       this.renderer.setGraph('DFA', DFA_STATES, DFA_TRANSITIONS, this.dfa.currentState);
       this.activeStateDisplay.textContent = this.dfa.getCurrentStateInfo().label;
-      this.stateRuleDisplay.textContent = this.dfa.getCurrentStateInfo().desc;
     }
 
     this.updateCheatsUI();
