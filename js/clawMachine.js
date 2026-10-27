@@ -6,36 +6,41 @@ import { drawClaw, drawPlushie, SPRITE_TYPES, PLUSHIE_CONFIGS } from './sprites.
 import { sound } from './audio.js?v=2';
 
 export class ClawMachine {
-  constructor(canvas, dfaEngine, nfaEngine, onPrizeWon) {
+  constructor(canvas, dfaEngine, nfaEngine, onPrizeWon, onTimerUpdate) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.dfa = dfaEngine;
     this.nfa = nfaEngine;
     this.onPrizeWon = onPrizeWon;
+    this.onTimerUpdate = onTimerUpdate;
 
-    // Arena dimensions
+    // Arena dimensions (synced to canvas element)
     this.width = canvas.width;
     this.height = canvas.height;
 
     // Gantry & Claw position
     this.homeX = 46;
     this.homeY = 32;
-    this.clawX = 220;
+    this.clawX = 260;
     this.clawY = 32;
     this.clawOpen = 0.6; // 0 (closed) to 1 (wide)
     this.targetOpen = 0.6;
 
     // Motion parameters
-    this.moveSpeed = 2.4;
-    this.dropSpeed = 2.8;
-    this.ascendSpeed = 2.2;
-    this.returnSpeed = 2.5;
+    this.moveSpeed = 2.8;
+    this.dropSpeed = 3.2;
+    this.ascendSpeed = 2.4;
+    this.returnSpeed = 2.8;
 
     // Game state & mechanics
     this.status = 'IDLE'; // IDLE, READY, AIMING, DROPPING, GRABBING, ASCENDING, RETURNING, EVALUATION
     this.coins = 5;
     this.unliCoins = false;
     this.boostChance = false;
+
+    // Countdown Timer (20 seconds)
+    this.timerSeconds = 20;
+    this.timerInterval = null;
 
     // Caught prize payload
     this.heldPlushie = null;
@@ -52,6 +57,38 @@ export class ClawMachine {
     this.runLoop();
   }
 
+  startTimer() {
+    this.stopTimer();
+    this.timerSeconds = 20;
+    if (this.onTimerUpdate) this.onTimerUpdate(this.timerSeconds);
+
+    this.timerInterval = setInterval(() => {
+      this.timerSeconds--;
+      if (this.onTimerUpdate) this.onTimerUpdate(this.timerSeconds);
+
+      if (this.timerSeconds <= 0) {
+        this.stopTimer();
+        // Time ran out! Auto drop claw
+        if (this.status === 'READY' || this.status === 'AIMING') {
+          this.dropClaw();
+        }
+      }
+    }, 1000);
+  }
+
+  stopTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  resetTimer() {
+    this.stopTimer();
+    this.timerSeconds = 20;
+    if (this.onTimerUpdate) this.onTimerUpdate(this.timerSeconds);
+  }
+
   initPlushiePile() {
     this.plushies = [];
     const types = [
@@ -61,12 +98,12 @@ export class ClawMachine {
       SPRITE_TYPES.PIKACHU,
     ];
 
-    // Create a cozy heap of plushies across the prize floor (x: 100 to 520)
-    const count = 18;
+    // Create a rich cozy heap of plushies across prize floor (x: 105 to 640)
+    const count = 22;
     for (let i = 0; i < count; i++) {
       const type = types[i % types.length];
-      const x = 110 + (i / count) * 400 + (Math.random() * 20 - 10);
-      const y = 340 + (Math.sin(i * 1.5) * 14);
+      const x = 115 + (i / count) * 510 + (Math.random() * 20 - 10);
+      const y = 390 + (Math.sin(i * 1.5) * 14);
       this.plushies.push({
         id: `plushie_${Date.now()}_${i}`,
         type,
@@ -74,7 +111,7 @@ export class ClawMachine {
         y,
         baseY: y,
         rotation: (Math.random() - 0.5) * 0.3,
-        size: 44,
+        size: 46,
       });
     }
   }
@@ -92,6 +129,7 @@ export class ClawMachine {
 
     sound.playCoin();
     this.status = 'READY';
+    this.startTimer();
     this.dfa.transition('COIN [C]');
     return true;
   }
@@ -106,9 +144,9 @@ export class ClawMachine {
 
     // Move gantry within play boundary
     const minX = 96;
-    const maxX = 516;
+    const maxX = 640;
     const minY = 28;
-    const maxY = 48;
+    const maxY = 55;
 
     this.clawX = Math.max(minX, Math.min(maxX, this.clawX + dirX * this.moveSpeed));
     this.clawY = Math.max(minY, Math.min(maxY, this.clawY + dirY * this.moveSpeed));
@@ -119,6 +157,7 @@ export class ClawMachine {
   dropClaw() {
     if (this.status !== 'READY' && this.status !== 'AIMING') return false;
 
+    this.stopTimer();
     this.status = 'DROPPING';
     this.targetOpen = 0.95; // open wide on drop
     sound.playDrop();
@@ -133,9 +172,9 @@ export class ClawMachine {
     // 2. Update status state machine
     if (this.status === 'DROPPING') {
       this.clawY += this.dropSpeed;
-      // Check collision with prize bed or floor (around y = 335)
-      if (this.clawY >= 335) {
-        this.clawY = 335;
+      // Check collision with prize bed or floor (around y = 385)
+      if (this.clawY >= 385) {
+        this.clawY = 385;
         this.status = 'GRABBING';
         this.targetOpen = 0.1; // clamp claws shut
         sound.playGrab();
@@ -159,7 +198,7 @@ export class ClawMachine {
         this.heldPlushie.y = this.clawY + 28;
 
         // Check if firm or slippery grip
-        if (!this.isGrabFirm && this.clawY < 160) {
+        if (!this.isGrabFirm && this.clawY < 200) {
           // Prize slips out!
           this.slipPrize();
         }
@@ -194,6 +233,7 @@ export class ClawMachine {
         }
       } else if (this.evalTimer <= 0) {
         this.status = 'IDLE';
+        this.resetTimer();
         this.dfa.transition('RESET');
         this.targetOpen = 0.6;
       }
@@ -201,11 +241,11 @@ export class ClawMachine {
 
     // 3. Falling prize animation (down into the chute)
     if (this.fallingPrize) {
-      this.fallingPrize.y += 4;
+      this.fallingPrize.y += 4.5;
       if (this.fallingPrize.y > this.height + 20) {
         // Won! Trigger callback
         sound.playWin();
-        this.spawnCelebrationParticles(this.homeX, 280);
+        this.spawnCelebrationParticles(this.homeX, 390);
         if (this.onPrizeWon) {
           this.onPrizeWon(this.fallingPrize.type);
         }
@@ -228,7 +268,7 @@ export class ClawMachine {
   evaluateGrab() {
     // Find closest plushie to claw tip (clawX, clawY + 20)
     let closest = null;
-    let minDist = 44;
+    let minDist = 46;
 
     this.plushies.forEach(p => {
       const dist = Math.hypot(p.x - this.clawX, p.y - (this.clawY + 24));
@@ -270,8 +310,8 @@ export class ClawMachine {
   respawnPlushie() {
     const types = [SPRITE_TYPES.BEAR, SPRITE_TYPES.FOX, SPRITE_TYPES.CAT, SPRITE_TYPES.PIKACHU];
     const type = types[Math.floor(Math.random() * types.length)];
-    const x = 120 + Math.random() * 280;
-    const y = 280 + (Math.random() * 12 - 6);
+    const x = 120 + Math.random() * 480;
+    const y = 390 + (Math.random() * 12 - 6);
     this.plushies.push({
       id: `plushie_${Date.now()}`,
       type,
@@ -279,22 +319,22 @@ export class ClawMachine {
       y,
       baseY: y,
       rotation: (Math.random() - 0.5) * 0.3,
-      size: 42,
+      size: 46,
     });
   }
 
   spawnCelebrationParticles(x, y) {
     const colors = ['#ffe600', '#ff5a5f', '#5bc4ff', '#ffffff', '#ff99dd'];
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 30; i++) {
       const angle = Math.random() * Math.PI * 2;
-      const speed = 2 + Math.random() * 4;
+      const speed = 2 + Math.random() * 4.5;
       this.particles.push({
         x,
         y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed - 2.5,
         color: colors[Math.floor(Math.random() * colors.length)],
-        size: 3 + Math.random() * 3,
+        size: 3.5 + Math.random() * 3,
         life: 1.0,
       });
     }
@@ -320,11 +360,13 @@ export class ClawMachine {
     ctx.lineTo(width - 40, 40);
     ctx.stroke();
 
-    // 2. Chute Box (Bottom Left: x: 0 to 86, y: 240 to 340)
+    // 2. Chute Box (Bottom Left: completely flush with bottom edge)
+    const chuteH = 90;
+    const chuteY = height - chuteH;
     ctx.fillStyle = '#261b23';
-    ctx.fillRect(8, 255, 72, 85);
+    ctx.fillRect(4, chuteY, 84, chuteH);
     ctx.fillStyle = '#150d12';
-    ctx.fillRect(16, 265, 56, 75);
+    ctx.fillRect(10, chuteY + 8, 72, chuteH - 8);
 
     // 3. Draw Plushies on the floor
     this.plushies.forEach(p => {
@@ -337,7 +379,7 @@ export class ClawMachine {
 
     // 4. Draw Falling Prize (into chute)
     if (this.fallingPrize) {
-      drawPlushie(ctx, this.fallingPrize.type, this.fallingPrize.x, this.fallingPrize.y, 42);
+      drawPlushie(ctx, this.fallingPrize.type, this.fallingPrize.x, this.fallingPrize.y, 46);
     }
 
     // 5. Draw Claw Mechanism (Gantry, Cable, Claws)

@@ -5,15 +5,15 @@
  */
 
 export const NFA_STATES = {
-  s0: { id: 's0', name: 'START', label: 's0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 55, y: 85 },
-  s1: { id: 's1', name: 'KEY_C', label: 's1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 165, y: 85 },
-  s2: { id: 's2', name: 'KEY_L', label: 's2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 275, y: 85 },
-  s3: { id: 's3', name: 'KEY_A', label: 's3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 385, y: 85 },
-  s4: { id: 's4', name: 'UNLOCK', label: 's4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 495, y: 85 },
+  s0: { id: 's0', name: 'START', label: 's0: IDLE', desc: 'Continuous Input Stream (Σ*)', isFinal: false, x: 65, y: 90 },
+  s1: { id: 's1', name: 'KEY_C', label: 's1: [C]', desc: 'Branch: Matched "C"', isFinal: false, x: 200, y: 90 },
+  s2: { id: 's2', name: 'KEY_L', label: 's2: [L]', desc: 'Branch: Matched "L"', isFinal: false, x: 335, y: 90 },
+  s3: { id: 's3', name: 'KEY_A', label: 's3: [A]', desc: 'Branch: Matched "A"', isFinal: false, x: 470, y: 90 },
+  s4: { id: 's4', name: 'UNLOCK', label: 's4: [W] ACCEPT', desc: 'Cheat Accept State (F)', isFinal: true, x: 605, y: 90 },
   
   // ε-transition sub-states for cheat modifiers
-  s_unli: { id: 's_unli', name: 'UNLI_COIN', label: 'ε: UNLI COIN', desc: 'C-O-I-N Unlocked', isFinal: true, x: 275, y: 260 },
-  s_boost: { id: 's_boost', name: 'BOOST_15', label: 'ε: BOOST +15%', desc: 'L-U-C-K Unlocked', isFinal: true, x: 460, y: 260 },
+  s_unli: { id: 's_unli', name: 'UNLI_COIN', label: 'ε: UNLI COIN', desc: 'C-O-I-N Unlocked', isFinal: true, x: 335, y: 300 },
+  s_boost: { id: 's_boost', name: 'BOOST_15', label: 'ε: BOOST +15%', desc: 'L-U-C-K Unlocked', isFinal: true, x: 550, y: 300 },
 };
 
 export const NFA_TRANSITIONS = [

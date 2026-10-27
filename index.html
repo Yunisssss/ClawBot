@@ -36,9 +36,15 @@
       <!-- Left: Claw Machine Cabinet -->
       <section class="claw-cabinet-wrapper">
         <div class="arcade-cabinet">
-          <!-- Top Marquee Sign -->
+          <!-- Top Marquee Sign with Digital TIMER -->
           <div class="cabinet-marquee">
-            <div class="marquee-screen"></div>
+            <div class="marquee-screen">
+              <span class="marquee-pixel-text">★ CLAWBOT ★</span>
+            </div>
+            <div class="cabinet-timer-box" id="cabinet-timer">
+              <div class="timer-title">TIMER</div>
+              <div class="timer-value" id="timer-val">20</div>
+            </div>
           </div>
 
           <!-- Glass Playing Field -->
@@ -46,12 +52,11 @@
             <div class="glass-reflection-bar left"></div>
             <div class="glass-reflection-bar right"></div>
             
-            <canvas id="claw-canvas" width="560" height="400"></canvas>
+            <canvas id="claw-canvas" width="680" height="450"></canvas>
             
             <!-- Chute Indicator Overlay -->
             <div class="chute-guard">
               <div class="chute-fence"></div>
-              <div class="chute-label">PRIZE CHUTE</div>
             </div>
           </div>
 
@@ -81,7 +86,7 @@
           <div class="automata-content-area" id="automata-content-area">
             <!-- Screen for State Diagrams -->
             <div class="automata-screen-container">
-              <canvas id="automata-canvas" width="560" height="400"></canvas>
+              <canvas id="automata-canvas" width="680" height="450"></canvas>
               
               <!-- State Info Ticker -->
               <div class="state-ticker">
@@ -218,6 +223,6 @@
   </div>
 
   <!-- Audio, Physics, Automata, and App Scripts -->
-  <script type="module" src="js/main.js?v=2"></script>
+  <script type="module" src="js/main.js?v=4"></script>
 </body>
 </html>

@@ -4,14 +4,14 @@
  */
 
 export const DFA_STATES = {
-  q0: { id: 'q0', name: 'IDLE', label: 'q0: IDLE', desc: 'Waiting for COIN [C]', isFinal: false, x: 60, y: 85 },
-  q1: { id: 'q1', name: 'READY', label: 'q1: READY', desc: 'Coin Loaded. Use WASD', isFinal: false, x: 200, y: 85 },
-  q2: { id: 'q2', name: 'AIMING', label: 'q2: AIMING', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 345, y: 85 },
-  q3: { id: 'q3', name: 'DROPPING', label: 'q3: DROP', desc: 'Claw Descending...', isFinal: false, x: 490, y: 85 },
-  q4: { id: 'q4', name: 'GRABBING', label: 'q4: GRAB', desc: 'Closing Claw Fingers', isFinal: false, x: 490, y: 260 },
-  q5: { id: 'q5', name: 'ASCENDING', label: 'q5: ASCEND', desc: 'Pulling Up...', isFinal: false, x: 345, y: 260 },
-  q6: { id: 'q6', name: 'RETURNING', label: 'q6: RETURN', desc: 'Returning to Chute', isFinal: false, x: 200, y: 260 },
-  q7: { id: 'q7', name: 'RESULT', label: 'q7: RESULT', desc: 'Prize Evaluation (Accepting)', isFinal: true, x: 60, y: 260 },
+  q0: { id: 'q0', name: 'IDLE', label: 'q0: IDLE', desc: 'Waiting for COIN [C]', isFinal: false, x: 70, y: 90 },
+  q1: { id: 'q1', name: 'READY', label: 'q1: READY', desc: 'Coin Loaded. Use WASD', isFinal: false, x: 240, y: 90 },
+  q2: { id: 'q2', name: 'AIMING', label: 'q2: AIMING', desc: 'Positioning Claw. Press Enter', isFinal: false, x: 420, y: 90 },
+  q3: { id: 'q3', name: 'DROPPING', label: 'q3: DROP', desc: 'Claw Descending...', isFinal: false, x: 600, y: 90 },
+  q4: { id: 'q4', name: 'GRABBING', label: 'q4: GRAB', desc: 'Closing Claw Fingers', isFinal: false, x: 600, y: 300 },
+  q5: { id: 'q5', name: 'ASCENDING', label: 'q5: ASCEND', desc: 'Pulling Up...', isFinal: false, x: 420, y: 300 },
+  q6: { id: 'q6', name: 'RETURNING', label: 'q6: RETURN', desc: 'Returning to Chute', isFinal: false, x: 240, y: 300 },
+  q7: { id: 'q7', name: 'RESULT', label: 'q7: RESULT', desc: 'Prize Evaluation (Accepting)', isFinal: true, x: 70, y: 300 },
 };
 
 // Transition Table δ(state, symbol) -> next_state

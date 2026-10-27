@@ -84,6 +84,7 @@ class App {
 
   initGame() {
     const clawCanvas = document.getElementById('claw-canvas');
+    this.timerVal = document.getElementById('timer-val');
     this.shelf = new CollectionShelf();
 
     this.clawMachine = new ClawMachine(
@@ -92,6 +93,12 @@ class App {
       this.nfa,
       (wonType) => {
         this.shelf.addPrize(wonType);
+      },
+      (seconds) => {
+        if (this.timerVal) {
+          this.timerVal.textContent = seconds < 10 ? `0${seconds}` : seconds;
+          this.timerVal.classList.toggle('urgent', seconds <= 5 && seconds > 0);
+        }
       }
     );
   }

@@ -58,11 +58,11 @@ body {
 
 /* Main Arcade Wrapper */
 .arcade-app {
-  width: 98vw;
-  max-width: 1400px;
+  width: 97vw;
+  max-width: 1720px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   position: relative;
 }
 
@@ -179,30 +179,79 @@ body {
   overflow: hidden;
 }
 
-/* Top Marquee */
+/* Top Marquee with Timer Display */
 .cabinet-marquee {
-  height: 38px;
+  height: 52px;
   background-color: var(--cabinet-pink-dark);
   border-bottom: 3px solid var(--cabinet-pink-border);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 4px 10px;
+  gap: 12px;
 }
 
 .marquee-screen {
-  width: 100%;
-  height: 24px;
+  flex: 1;
+  height: 38px;
   background-color: var(--marquee-bg);
   border: 2px solid var(--cabinet-pink-border);
   border-radius: 2px;
   box-shadow: inset 1px 1px 2px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.marquee-pixel-text {
+  font-family: var(--font-pixel);
+  font-size: 11px;
+  color: #59394c;
+  letter-spacing: 2px;
+}
+
+/* Dedicated Retro TIMER Box */
+.cabinet-timer-box {
+  width: 86px;
+  height: 42px;
+  background-color: #382431;
+  border: 2.5px solid var(--cabinet-pink-border);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+  flex-shrink: 0;
+}
+
+.timer-title {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: #f7d6e4;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.timer-value {
+  font-family: var(--font-pixel);
+  font-size: 18px;
+  color: #ffffff;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 3px rgba(255,255,255,0.6);
+}
+
+.timer-value.urgent {
+  color: #ff3344;
+  animation: pulse-red 0.5s infinite alternate;
+  text-shadow: 0 0 6px #ff3344;
 }
 
 /* Glass Frame */
 .cabinet-glass-frame {
   position: relative;
-  height: 390px;
+  height: 450px;
   background-color: var(--cabinet-inner-gray);
   border: 3px solid #33242e;
   margin: 6px 8px;
@@ -247,8 +296,8 @@ body {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 86px;
-  height: 80px;
+  width: 90px;
+  height: 85px;
   pointer-events: none;
   z-index: 4;
 }
@@ -256,9 +305,9 @@ body {
 .chute-fence {
   position: absolute;
   bottom: 0;
-  left: 6px;
-  width: 72px;
-  height: 48px;
+  left: 4px;
+  width: 84px;
+  height: 65px;
   border-top: 3px solid #fff;
   border-right: 3px solid #fff;
   background: repeating-linear-gradient(
@@ -387,7 +436,7 @@ body {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  height: 405px;
+  height: 465px;
 }
 
 #automata-canvas {
@@ -544,7 +593,7 @@ body {
    ======================================================== */
 .bottom-console {
   display: grid;
-  grid-template-columns: 100px 115px 220px 170px 240px 1fr;
+  grid-template-columns: 110px 125px 230px 180px 300px 1fr;
   gap: 12px;
   align-items: center;
 }
@@ -553,7 +602,7 @@ body {
   background-color: var(--cabinet-pink);
   border: 2.5px solid var(--cabinet-pink-border);
   border-radius: 4px;
-  height: 82px;
+  height: 84px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -769,19 +818,24 @@ body {
 .cheat-text-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   text-align: left;
+  font-family: var(--font-pixel);
 }
 
 #cheat-action-text {
-  font-size: 7.5px;
+  font-family: var(--font-pixel);
+  font-size: 8px;
   color: #1a1a1a;
-  line-height: 1.3;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 
 .cheat-key-hint {
-  font-size: 7px;
+  font-family: var(--font-pixel);
+  font-size: 7.5px;
   color: #5e3b50;
+  white-space: nowrap;
 }
 
 /* 6. Collection Shelf Trigger */
