@@ -50,11 +50,11 @@ body {
   min-height: 100dvh;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center; /* Centered vertically on desktop */
   font-family: var(--font-pixel);
   color: #1a1a1a;
   overflow-x: hidden;
-  padding: 12px 16px;
+  padding: 12px 18px;
 }
 
 /* Interactive touch responsiveness */
@@ -72,12 +72,13 @@ button,
 
 /* Main Arcade Wrapper */
 .arcade-app {
-  width: 100%;
-  max-width: 1600px;
+  width: 97vw;
+  max-width: 1720px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   position: relative;
+  margin: auto 0; /* Ensures full vertical centering on desktop */
 }
 
 /* ========================================================
@@ -269,12 +270,10 @@ button,
 /* Glass Frame */
 .cabinet-glass-frame {
   position: relative;
-  aspect-ratio: 680 / 450;
-  width: calc(100% - 16px);
-  max-height: 480px;
+  height: 450px;
   background-color: var(--cabinet-inner-gray);
   border: 3px solid #33242e;
-  margin: 6px auto;
+  margin: 6px 8px;
   overflow: hidden;
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.45);
 }
@@ -283,7 +282,6 @@ button,
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: contain;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
 }
@@ -317,8 +315,8 @@ button,
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 13.5%;
-  height: 19%;
+  width: 90px;
+  height: 85px;
   pointer-events: none;
   z-index: 4;
 }
@@ -326,9 +324,9 @@ button,
 .chute-fence {
   position: absolute;
   bottom: 0;
-  left: 4.5%;
-  width: 95%;
-  height: 76%;
+  left: 4px;
+  width: 84px;
+  height: 65px;
   border-top: 3px solid #fff;
   border-right: 3px solid #fff;
   background: repeating-linear-gradient(
@@ -457,16 +455,13 @@ button,
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
-  height: auto;
+  height: 465px;
 }
 
 #automata-canvas {
   width: 100%;
-  aspect-ratio: 680 / 450;
-  height: auto;
-  max-height: 480px;
+  flex: 1;
   display: block;
-  object-fit: contain;
 }
 
 /* State Ticker Bar on Automata Screen */
@@ -1046,6 +1041,52 @@ button,
 
 /* 1. Large Tablets & iPad Pro / Landscape (<= 1120px) */
 @media (max-width: 1120px) {
+  body {
+    align-items: flex-start;
+    padding: 10px 12px;
+  }
+
+  .arcade-app {
+    width: 100%;
+    margin: 0;
+    gap: 12px;
+  }
+
+  /* Responsive canvas with aspect ratio for iPad & mobile */
+  .cabinet-glass-frame {
+    aspect-ratio: 680 / 450;
+    width: calc(100% - 16px);
+    height: auto;
+    max-height: 480px;
+    margin: 6px auto;
+  }
+
+  #claw-canvas {
+    object-fit: contain;
+  }
+
+  .chute-guard {
+    width: 13.5%;
+    height: 19%;
+  }
+
+  .chute-fence {
+    left: 4.5%;
+    width: 95%;
+    height: 76%;
+  }
+
+  .automata-screen-container {
+    height: auto;
+  }
+
+  #automata-canvas {
+    aspect-ratio: 680 / 450;
+    height: auto;
+    max-height: 480px;
+    object-fit: contain;
+  }
+
   .main-stage {
     grid-template-columns: 1fr;
     gap: 14px;
