@@ -225,38 +225,51 @@ class App {
     }
 
     // Coin Insert
-    this.btnInsertCoin.addEventListener('click', () => {
+    const handleInsertCoin = (e) => {
+      if (e && e.cancelable && e.type === 'touchstart') e.preventDefault();
       if (this.clawMachine.insertCoin()) {
         this.updateCoinsDisplay();
       }
-    });
+    };
+    this.btnInsertCoin.addEventListener('click', handleInsertCoin);
+    this.btnInsertCoin.addEventListener('touchstart', handleInsertCoin, { passive: false });
 
     // Drop Button
-    this.btnDrop.addEventListener('click', () => {
+    const handleDrop = (e) => {
+      if (e && e.cancelable && e.type === 'touchstart') e.preventDefault();
       this.clawMachine.dropClaw();
-    });
+    };
+    this.btnDrop.addEventListener('click', handleDrop);
+    this.btnDrop.addEventListener('touchstart', handleDrop, { passive: false });
 
     // Virtual D-Pad
     const setupDpad = (btn, dx, dy) => {
       let interval = null;
-      const start = () => {
+      const start = (e) => {
+        if (e && e.cancelable && e.type === 'touchstart') e.preventDefault();
         btn.classList.add('active');
         this.tiltJoystick(dx, dy);
         this.clawMachine.move(dx, dy);
-        interval = setInterval(() => {
-          this.clawMachine.move(dx, dy);
-        }, 30);
+        if (!interval) {
+          interval = setInterval(() => {
+            this.clawMachine.move(dx, dy);
+          }, 30);
+        }
       };
       const stop = () => {
         btn.classList.remove('active');
         this.resetJoystick();
-        if (interval) clearInterval(interval);
+        if (interval) {
+          clearInterval(interval);
+          interval = null;
+        }
       };
       btn.addEventListener('mousedown', start);
       btn.addEventListener('mouseup', stop);
       btn.addEventListener('mouseleave', stop);
-      btn.addEventListener('touchstart', (e) => { e.preventDefault(); start(); });
+      btn.addEventListener('touchstart', start, { passive: false });
       btn.addEventListener('touchend', stop);
+      btn.addEventListener('touchcancel', stop);
     };
 
     setupDpad(this.btnUp, 0, -1);
